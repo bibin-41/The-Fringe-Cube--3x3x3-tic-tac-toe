@@ -27,6 +27,9 @@
       --pink: #ff0055;
       --pink-glow: rgba(255, 0, 85, 0.6);
       --pink-dim: rgba(255, 0, 85, 0.15);
+      --tri: #00ff88;
+      --tri-glow: rgba(0, 255, 136, 0.6);
+      --tri-dim: rgba(0, 255, 136, 0.15);
       --violet: #8a2be2;
       --violet-glow: rgba(138, 43, 226, 0.4);
       --text-primary: #e0e6f0;
@@ -53,12 +56,19 @@
     body {
       width: 100%;
       height: 100%;
+      height: 100dvh;
+      min-height: 100vh;
       overflow: hidden;
       background: var(--bg-void);
       color: var(--text-primary);
       font-family: var(--font-mono);
       font-size: 13px;
       -webkit-font-smoothing: antialiased;
+      touch-action: manipulation;
+      -webkit-touch-callout: none;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      -webkit-user-select: none;
     }
 
     /* Hex grid overlay */
@@ -96,10 +106,12 @@
       grid-template-areas:
         "topbar topbar topbar"
         "sidebar viewport infobar";
-      height: 100vh;
+      height: 100%;
+      height: 100dvh;
       width: 100vw;
       position: relative;
       z-index: 1;
+      overflow: hidden;
     }
 
     /* ── Top Bar ───────────────────────────────────────────────── */
@@ -125,7 +137,7 @@
       white-space: nowrap;
     }
 
-    .logo span {
+    .logo span.logo-accent {
       color: var(--violet);
     }
 
@@ -163,6 +175,12 @@
       box-shadow: 0 0 15px var(--pink-dim);
     }
 
+    .turn-indicator.tri-turn {
+      border-color: var(--tri);
+      color: var(--tri);
+      box-shadow: 0 0 15px var(--tri-dim);
+    }
+
     .turn-dot {
       width: 8px;
       height: 8px;
@@ -178,6 +196,11 @@
     .o-turn .turn-dot {
       background: var(--pink);
       box-shadow: 0 0 8px var(--pink-glow);
+    }
+
+    .tri-turn .turn-dot {
+      background: var(--tri);
+      box-shadow: 0 0 8px var(--tri-glow);
     }
 
     @keyframes pulse-dot {
@@ -225,6 +248,13 @@
       color: var(--pink);
       background: var(--pink-dim);
       box-shadow: 0 0 20px var(--pink-dim);
+    }
+
+    .status-badge.win-tri {
+      border-color: var(--tri);
+      color: var(--tri);
+      background: var(--tri-dim);
+      box-shadow: 0 0 20px var(--tri-dim);
     }
 
     .status-badge.draw {
@@ -420,6 +450,7 @@
       width: 100%;
       height: 100%;
       display: block;
+      touch-action: none;
     }
 
     #flat-view {
@@ -511,12 +542,23 @@
       background: var(--pink-dim);
     }
 
+    .flat-cell.tri-cell {
+      color: var(--tri);
+      text-shadow: 0 0 15px var(--tri-glow);
+      border-color: rgba(0, 255, 136, 0.3);
+      background: var(--tri-dim);
+    }
+
     .flat-cell.ghost-x {
       color: rgba(0, 240, 255, 0.25);
     }
 
     .flat-cell.ghost-o {
       color: rgba(255, 0, 85, 0.25);
+    }
+
+    .flat-cell.ghost-tri {
+      color: rgba(0, 255, 136, 0.25);
     }
 
     .flat-cell.winning-cell {
@@ -529,6 +571,10 @@
 
     .flat-cell.winning-cell.o-cell {
       box-shadow: 0 0 20px var(--pink-glow), 0 0 40px var(--pink-dim);
+    }
+
+    .flat-cell.winning-cell.tri-cell {
+      box-shadow: 0 0 20px var(--tri-glow), 0 0 40px var(--tri-dim);
     }
 
     .flat-cell.dimmed {
@@ -563,16 +609,17 @@
     .score-display {
       display: flex;
       align-items: stretch;
-      gap: 8px;
+      gap: 6px;
     }
 
     .score-card {
       flex: 1;
+      min-width: 0;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 12px 8px;
+      padding: 10px 4px;
       border-radius: var(--radius-lg);
       background: var(--bg-glass);
       border: 1px solid var(--border-dim);
@@ -585,6 +632,10 @@
 
     .score-card.o-score {
       border-color: rgba(255, 0, 85, 0.2);
+    }
+
+    .score-card.tri-score {
+      border-color: rgba(0, 255, 136, 0.2);
     }
 
     .score-card.draw-score {
@@ -607,13 +658,17 @@
       color: var(--pink);
     }
 
+    .score-card.tri-score .label {
+      color: var(--tri);
+    }
+
     .score-card.draw-score .label {
       color: var(--violet);
     }
 
     .score-card .value {
       font-family: var(--font-display);
-      font-size: 24px;
+      font-size: 20px;
       font-weight: 800;
     }
 
@@ -625,6 +680,11 @@
     .score-card.o-score .value {
       color: var(--pink);
       text-shadow: 0 0 10px var(--pink-glow);
+    }
+
+    .score-card.tri-score .value {
+      color: var(--tri);
+      text-shadow: 0 0 10px var(--tri-glow);
     }
 
     .score-card.draw-score .value {
@@ -680,6 +740,10 @@
       border-left: 2px solid var(--pink);
     }
 
+    .history-entry.tri-move {
+      border-left: 2px solid var(--tri);
+    }
+
     .history-entry .move-num {
       font-family: var(--font-display);
       font-size: 9px;
@@ -699,6 +763,10 @@
 
     .history-entry.o-move .move-player {
       color: var(--pink);
+    }
+
+    .history-entry.tri-move .move-player {
+      color: var(--tri);
     }
 
     .history-entry .move-pos {
@@ -753,6 +821,12 @@
       border: 1px solid rgba(255, 0, 85, 0.2);
     }
 
+    .line-item.tri-won {
+      color: var(--tri);
+      background: var(--tri-dim);
+      border: 1px solid rgba(0, 255, 136, 0.2);
+    }
+
     /* ── Ambient Particles (CSS) ──────────────────────────────── */
     .particle {
       position: fixed;
@@ -786,13 +860,302 @@
       }
     }
 
-    /* ── Responsive ───────────────────────────────────────────── */
+    /* ── Responsive & Mobile Design System ─────────────────────── */
+    .logo-short {
+      display: none;
+    }
+
+    .btn-reset .reset-icon {
+      display: none;
+    }
+
+    .mobile-score-ribbon {
+      display: none;
+      grid-area: mobileribbon;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 14px;
+      background: rgba(10, 12, 22, 0.94);
+      border-bottom: 1px solid var(--border-dim);
+      backdrop-filter: blur(12px);
+      z-index: 90;
+      gap: 10px;
+    }
+
+    .mob-scores {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .mob-scores::-webkit-scrollbar {
+      display: none;
+    }
+
+    .mob-score {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: var(--bg-glass);
+      border: 1px solid var(--border-dim);
+      white-space: nowrap;
+    }
+
+    .mob-score .sym {
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .mob-score.mob-x {
+      border-color: rgba(0, 240, 255, 0.25);
+      color: var(--cyan);
+    }
+
+    .mob-score.mob-o {
+      border-color: rgba(255, 0, 85, 0.25);
+      color: var(--pink);
+    }
+
+    .mob-score.mob-tri {
+      border-color: rgba(0, 255, 136, 0.25);
+      color: var(--tri);
+    }
+
+    .mob-score.mob-draw {
+      border-color: rgba(138, 43, 226, 0.25);
+      color: #a4b3d6;
+    }
+
+    .mob-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .mob-action-btn {
+      font-family: var(--font-display);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: var(--text-primary);
+      background: var(--bg-glass);
+      border: 1px solid var(--border-glow);
+      padding: 4px 10px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 28px;
+    }
+
+    .mob-action-btn:hover,
+    .mob-action-btn:active {
+      border-color: var(--cyan);
+      background: rgba(0, 240, 255, 0.12);
+      box-shadow: 0 0 10px var(--cyan-dim);
+    }
+
+    .flat-planes-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 28px;
+      width: 100%;
+    }
+
+    /* Floating 3D Mobile Dock */
+    .mobile-3d-dock {
+      display: none;
+      position: absolute;
+      bottom: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      background: var(--bg-panel);
+      border: 1px solid var(--border-glow);
+      border-radius: 24px;
+      backdrop-filter: blur(14px);
+      box-shadow: 0 6px 25px rgba(0, 0, 0, 0.7), 0 0 15px var(--cyan-dim);
+      z-index: 25;
+      pointer-events: auto;
+      max-width: 96vw;
+    }
+
+    .dock-group {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .dock-divider {
+      width: 1px;
+      height: 18px;
+      background: var(--border-glow);
+      margin: 0 3px;
+    }
+
+    .dock-btn {
+      font-family: var(--font-display);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: var(--text-dim);
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 12px;
+      padding: 4px 8px;
+      cursor: pointer;
+      transition: var(--transition);
+      white-space: nowrap;
+    }
+
+    .dock-btn:hover {
+      color: var(--text-primary);
+      border-color: var(--border-dim);
+    }
+
+    .dock-btn.active {
+      color: var(--cyan);
+      background: rgba(0, 240, 255, 0.15);
+      border-color: var(--cyan);
+      box-shadow: 0 0 8px var(--cyan-dim);
+    }
+
+    /* Mobile Telemetry & Stats Modal */
+    .stats-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(4, 5, 10, 0.75);
+      backdrop-filter: blur(8px);
+      z-index: 250;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+
+    .stats-modal.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .stats-modal-dialog {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-glow);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), 0 0 25px var(--cyan-dim);
+      width: 100%;
+      max-width: 420px;
+      max-height: 82vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transform: translateY(20px) scale(0.96);
+      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .stats-modal.open .stats-modal-dialog {
+      transform: translateY(0) scale(1);
+    }
+
+    .stats-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-dim);
+      background: var(--bg-glass);
+    }
+
+    .stats-modal-title {
+      font-family: var(--font-display);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      color: var(--cyan);
+    }
+
+    .stats-modal-close {
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      font-size: 16px;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 4px;
+      transition: var(--transition);
+    }
+
+    .stats-modal-close:hover {
+      color: var(--pink);
+    }
+
+    .stats-modal-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border-dim);
+      background: rgba(14, 18, 35, 0.4);
+    }
+
+    .stats-tab-btn {
+      flex: 1;
+      font-family: var(--font-display);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      padding: 10px 8px;
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--text-dim);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .stats-tab-btn.active {
+      color: var(--cyan);
+      border-bottom-color: var(--cyan);
+      background: rgba(0, 240, 255, 0.05);
+    }
+
+    .stats-modal-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px;
+      min-height: 200px;
+    }
+
+    .modal-tab-content {
+      display: none;
+    }
+
+    .modal-tab-content.active {
+      display: block;
+    }
+
+    /* Media query for screens <= 1100px */
     @media (max-width: 1100px) {
       #app {
         grid-template-columns: 1fr;
-        grid-template-rows: 52px 1fr;
+        grid-template-rows: 50px auto 1fr;
         grid-template-areas:
           "topbar"
+          "mobileribbon"
           "viewport";
       }
 
@@ -800,36 +1163,168 @@
         display: none;
       }
 
+      .mobile-score-ribbon {
+        display: flex;
+      }
+
+      .mobile-3d-dock.visible {
+        display: flex;
+      }
+
       #flat-view {
+        padding: 8px 6px;
+        gap: 8px;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .flat-planes-container {
+        display: flex;
         flex-direction: column;
+        gap: 8px;
+        width: 100%;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .flat-planes-container .flat-plane {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .flat-planes-container .flat-plane-label {
+        font-size: 8px;
+        padding: 2px 8px;
+        letter-spacing: 1px;
+      }
+
+      .flat-planes-container .flat-grid {
+        gap: 3px;
+        padding: 4px;
+      }
+
+      .flat-planes-container .flat-cell {
+        width: clamp(35px, 9vw, 46px);
+        height: clamp(35px, 9vw, 46px);
+        font-size: clamp(16px, 4.4vw, 24px);
+        border-radius: 6px;
       }
     }
 
+    /* Compact screens <= 600px */
     @media (max-width: 600px) {
+      #topbar {
+        padding: 0 10px;
+      }
+
+      .logo-full {
+        display: none;
+      }
+
+      .logo-short {
+        display: inline;
+      }
+
       .logo {
-        font-size: 11px;
-        letter-spacing: 1.5px;
+        font-size: 13px;
+        letter-spacing: 2px;
+      }
+
+      .topbar-center {
+        gap: 8px;
       }
 
       .turn-indicator {
-        padding: 4px 10px;
+        padding: 4px 8px;
+        font-size: 9px;
+        gap: 5px;
+      }
+
+      .turn-dot {
+        width: 6px;
+        height: 6px;
+      }
+
+      .btn-reset .reset-text {
+        display: none;
+      }
+
+      .btn-reset .reset-icon {
+        display: inline;
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .btn-reset {
+        padding: 4px 8px;
+        min-width: 32px;
+        min-height: 32px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .topbar-right {
+        gap: 6px;
+      }
+    }
+
+    /* Extra compact phones <= 420px */
+    @media (max-width: 420px) {
+      #statusBadge {
+        display: none;
+      }
+
+      .turn-indicator {
+        padding: 3px 6px;
+        font-size: 8.5px;
+      }
+
+      .mob-score {
+        padding: 2px 5px;
+        font-size: 10px;
+      }
+
+      .mob-action-btn {
+        padding: 3px 7px;
         font-size: 9px;
       }
+    }
 
-      .status-badge {
-        font-size: 8px;
-        padding: 3px 8px;
-      }
-
-      .flat-cell {
-        width: 56px;
-        height: 56px;
-        font-size: 22px;
+    /* Mobile landscape orientation */
+    @media (max-height: 540px) and (orientation: landscape) {
+      #mobileScoreRibbon {
+        padding: 2px 10px;
       }
 
       #flat-view {
-        gap: 16px;
-        padding: 16px;
+        padding: 4px;
+        gap: 4px;
+      }
+
+      .flat-planes-container {
+        flex-direction: row !important;
+        gap: 10px !important;
+        justify-content: center !important;
+        align-items: center !important;
+      }
+
+      .flat-plane {
+        display: flex !important;
+        gap: 4px !important;
+      }
+
+      .flat-cell {
+        width: clamp(38px, 17vh, 56px) !important;
+        height: clamp(38px, 17vh, 56px) !important;
+        font-size: clamp(16px, 7vh, 24px) !important;
+      }
+
+      .flat-plane-label {
+        font-size: 7.5px !important;
+        padding: 2px 6px !important;
       }
     }
 
@@ -921,10 +1416,10 @@
 
       #sidebar {
         position: fixed;
-        top: 52px;
+        top: 50px;
         left: 0;
         bottom: 0;
-        width: 280px;
+        width: min(300px, 86vw);
         z-index: 200;
         flex-direction: column;
         overflow-y: auto;
@@ -964,11 +1459,14 @@
     <!-- ═══ Top Bar ═══ -->
     <div id="sidebarOverlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
     <header id="topbar">
-      <div style="display:flex;align-items:center;gap:12px;">
+      <div style="display:flex;align-items:center;gap:10px;">
         <button class="hamburger-btn" id="hamburgerBtn" onclick="toggleSidebar()" title="Menu">
           <span></span><span></span><span></span>
         </button>
-        <div class="logo">THE FRINGE CUBE <span>3x3x3</span></div>
+        <div class="logo">
+          <span class="logo-full">THE FRINGE CUBE <span class="logo-accent">3x3x3</span></span>
+          <span class="logo-short">FRINGE <span class="logo-accent">3³</span></span>
+        </div>
       </div>
       <div class="topbar-center">
         <div id="turnIndicator" class="turn-indicator x-turn">
@@ -979,9 +1477,31 @@
       </div>
       <div class="topbar-right">
         <button id="btnAudio" class="btn btn-icon" title="Toggle Audio" onclick="toggleAudio()">🔊</button>
-        <button class="btn" onclick="resetGame()">⟳ RESET</button>
+        <button class="btn btn-reset" onclick="resetGame()" title="Reset Game">
+          <span class="reset-text">⟳ RESET</span>
+          <span class="reset-icon">⟳</span>
+        </button>
       </div>
     </header>
+
+    <!-- ═══ Mobile Quick Score Ribbon ═══ -->
+    <div id="mobileScoreRibbon" class="mobile-score-ribbon">
+      <div class="mob-scores">
+        <div class="mob-score mob-x"><span class="sym">✕</span> <span id="mobScoreX">0</span></div>
+        <div class="mob-score mob-o"><span class="sym">◯</span> <span id="mobScoreO">0</span></div>
+        <div class="mob-score mob-tri" id="mobScoreTriWrap" style="display:none;"><span class="sym">△</span> <span
+            id="mobScoreTri">0</span></div>
+        <div class="mob-score mob-draw"><span class="sym">D</span> <span id="mobScoreDraw">0</span></div>
+      </div>
+      <div class="mob-actions">
+        <button id="mobBtnViewToggle" class="mob-action-btn" onclick="toggleViewModeMobile()" title="Switch 2D / 3D">
+          <span id="mobBtnViewIcon">◈ 3D</span>
+        </button>
+        <button id="mobBtnStats" class="mob-action-btn" onclick="openStatsModal()" title="View Stats & Move Log">
+          📜 LOG
+        </button>
+      </div>
+    </div>
 
     <!-- ═══ Left Sidebar ═══ -->
     <aside id="sidebar">
@@ -998,8 +1518,18 @@
       <div class="panel">
         <div class="panel-title">Game Mode</div>
         <div class="btn-row">
-          <button id="btnPvP" class="btn active" onclick="setGameMode('pvp')">⚔ PvP</button>
-          <button id="btnPvAI" class="btn" onclick="setGameMode('ai')">🤖 vs AI</button>
+          <button id="btnPvP" class="btn active" onclick="setGameMode('pvp')" title="2 Players (X vs O)">⚔ 2P</button>
+          <button id="btn3P" class="btn" onclick="setGameMode('3p')" title="3 Players (X vs O vs △)">▲ 3P</button>
+          <button id="btnPvAI" class="btn" onclick="setGameMode('ai')" title="Single Player vs AI">🤖 vs AI</button>
+        </div>
+        <div id="threePlayerSettings" style="display:none; margin-top:10px;">
+          <div class="control-label" style="margin-bottom:6px;">3P Participants</div>
+          <div class="btn-row">
+            <button id="btn3pHumans" class="btn active" onclick="set3PBotMode('0')" title="3 Human Players">3
+              HUMANS</button>
+            <button id="btn3p1Bot" class="btn" onclick="set3PBotMode('1')" title="2 Humans + 1 Bot">+1 BOT</button>
+            <button id="btn3p2Bots" class="btn" onclick="set3PBotMode('2')" title="1 Human + 2 Bots">+2 BOTS</button>
+          </div>
         </div>
         <div id="aiSettings" style="display:none; margin-top:10px;">
           <div class="control-label" style="margin-bottom:6px;">AI Difficulty</div>
@@ -1043,7 +1573,23 @@
       <div id="viewModeBadge" class="view-mode-badge">3D SPATIAL</div>
       <canvas id="three-canvas"></canvas>
       <div id="flat-view">
-        <!-- Dynamically generated -->
+        <!-- Dynamically generated with layer switcher and planes -->
+      </div>
+
+      <!-- Floating 3D Mobile Dock -->
+      <div id="mobile3DDock" class="mobile-3d-dock">
+        <div class="dock-group">
+          <button class="dock-btn" onclick="setCameraPreset('front')">FRONT</button>
+          <button class="dock-btn" onclick="setCameraPreset('top')">TOP</button>
+          <button class="dock-btn" onclick="setCameraPreset('iso')">ISO</button>
+        </div>
+        <div class="dock-divider"></div>
+        <div class="dock-group">
+          <button class="dock-btn dock-layer-btn active" id="mobLAll" onclick="isolateLayer(-1)">ALL</button>
+          <button class="dock-btn dock-layer-btn" id="mobL0" onclick="isolateLayer(0)">L1</button>
+          <button class="dock-btn dock-layer-btn" id="mobL1" onclick="isolateLayer(1)">L2</button>
+          <button class="dock-btn dock-layer-btn" id="mobL2" onclick="isolateLayer(2)">L3</button>
+        </div>
       </div>
     </main>
 
@@ -1052,17 +1598,21 @@
       <div class="panel">
         <div class="panel-title">Scoreboard</div>
         <div class="score-display">
-          <div class="score-card x-score">
-            <div class="label">X</div>
+          <div class="score-card x-score" id="scoreCardX">
+            <div class="label">✕</div>
             <div class="value" id="scoreX">0</div>
           </div>
-          <div class="score-card draw-score">
+          <div class="score-card o-score" id="scoreCardO">
+            <div class="label">◯</div>
+            <div class="value" id="scoreO">0</div>
+          </div>
+          <div class="score-card tri-score" id="scoreCardTri" style="display:none;">
+            <div class="label">△</div>
+            <div class="value" id="scoreTri">0</div>
+          </div>
+          <div class="score-card draw-score" id="scoreCardDraw">
             <div class="label">DRAW</div>
             <div class="value" id="scoreDraw">0</div>
-          </div>
-          <div class="score-card o-score">
-            <div class="label">O</div>
-            <div class="value" id="scoreO">0</div>
           </div>
         </div>
       </div>
@@ -1088,14 +1638,37 @@
     </aside>
   </div>
 
+  <!-- ═══ Mobile Stats & History Modal ═══ -->
+  <div id="statsModal" class="stats-modal" onclick="onStatsModalClick(event)">
+    <div class="stats-modal-dialog">
+      <div class="stats-modal-header">
+        <div class="stats-modal-title">GAME TELEMETRY</div>
+        <button class="stats-modal-close" onclick="closeStatsModal()" title="Close">✕</button>
+      </div>
+      <div class="stats-modal-tabs">
+        <button id="modalTabMoves" class="stats-tab-btn active" onclick="switchModalTab('moves')">MOVE LOG (<span
+            id="modalMoveCount">0/27</span>)</button>
+        <button id="modalTabLines" class="stats-tab-btn" onclick="switchModalTab('lines')">WIN LINES (49)</button>
+      </div>
+      <div class="stats-modal-body">
+        <div id="modalMoveLogView" class="modal-tab-content active">
+          <div class="history-log" id="modalHistoryLog"></div>
+        </div>
+        <div id="modalLinesView" class="modal-tab-content">
+          <div class="lines-checklist" id="modalLinesChecklist"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     // ═══════════════════════════════════════════════════════════════
     // HYPERGRID // 3X3X3  —  Game Engine
     // ═══════════════════════════════════════════════════════════════
 
     // ── Constants ─────────────────────────────────────────────────
-    const EMPTY = 0, X = 1, O = 2;
-    const CYAN = 0x00f0ff, PINK = 0xff0055, VIOLET = 0x8a2be2;
+    const EMPTY = 0, X = 1, O = 2, TRIANGLE = 3;
+    const CYAN = 0x00f0ff, PINK = 0xff0055, TRI_COLOR = 0x00ff88, VIOLET = 0x8a2be2;
 
     // ── Game State ────────────────────────────────────────────────
     let board = new Array(27).fill(EMPTY);
@@ -1103,13 +1676,37 @@
     let gameOver = false;
     let winLine = null;
     let viewMode = '2d'; // '3d' or '2d'
-    let gameMode = 'pvp'; // 'pvp' or 'ai'
+    let gameMode = 'pvp'; // 'pvp' (2P), '3p' (3P), or 'ai'
+    let botMode3P = '0'; // '0': 3 humans, '1': 1 bot (triangle), '2': 2 bots (o & triangle)
     let aiDifficulty = 'easy';
     let audioEnabled = true;
     let moveHistory = [];
-    let scores = { x: 0, o: 0, draw: 0 };
+    let scores = { x: 0, o: 0, tri: 0, draw: 0 };
     let isolatedLayer = -1;
     let explodeAmount = 0.3;
+
+    function getPlayerColorHex(player) {
+      if (player === X) return CYAN;
+      if (player === O) return PINK;
+      if (player === TRIANGLE) return TRI_COLOR;
+      return 0x2a3055;
+    }
+
+    function getPlayerSymbol(player) {
+      if (player === X) return '✕';
+      if (player === O) return '◯';
+      if (player === TRIANGLE) return '△';
+      return '';
+    }
+
+    function isCurrentPlayerBot() {
+      if (gameMode === 'ai') return currentPlayer === O;
+      if (gameMode === '3p') {
+        if (botMode3P === '1') return currentPlayer === TRIANGLE;
+        if (botMode3P === '2') return currentPlayer === O || currentPlayer === TRIANGLE;
+      }
+      return false;
+    }
 
     // ── 49 Winning Lines ─────────────────────────────────────────
     // index = y*9 + z*3 + x  (layer=y, row=z, col=x)
@@ -1255,11 +1852,14 @@
 
       buildCells();
 
-      // Raycasting
+      // Raycasting & Pointer/Touch Interaction
       const raycaster = new THREE.Raycaster();
       const pointer = new THREE.Vector2();
+      let pointerDownPos = { x: 0, y: 0, time: 0 };
 
       canvas.addEventListener('pointermove', (e) => {
+        if (e.pointerType === 'touch') return;
+
         const rect = canvas.getBoundingClientRect();
         pointer.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
         pointer.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
@@ -1284,9 +1884,40 @@
         }
       });
 
+      canvas.addEventListener('pointerleave', () => {
+        if (hoveredCell !== -1) {
+          hoveredCell = -1;
+          updateGhostPreview();
+          updateCellHighlights();
+        }
+      });
+
       canvas.addEventListener('pointerdown', (e) => {
-        if (hoveredCell !== -1 && !gameOver) {
-          makeMove(hoveredCell);
+        pointerDownPos.x = e.clientX;
+        pointerDownPos.y = e.clientY;
+        pointerDownPos.time = Date.now();
+      });
+
+      canvas.addEventListener('pointerup', (e) => {
+        const dx = e.clientX - pointerDownPos.x;
+        const dy = e.clientY - pointerDownPos.y;
+        const dist = Math.hypot(dx, dy);
+        const dt = Date.now() - pointerDownPos.time;
+
+        if (dist > 12 || dt > 450) return;
+
+        const rect = canvas.getBoundingClientRect();
+        pointer.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+        pointer.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+        raycaster.setFromCamera(pointer, camera);
+
+        const intersects = raycaster.intersectObjects(cellMeshes.filter(m => m.visible));
+        if (intersects.length > 0) {
+          const mesh = intersects[0].object;
+          const ci = mesh.userData.cellIndex;
+          if (board[ci] === EMPTY && !gameOver && !isCurrentPlayerBot()) {
+            makeMove(ci);
+          }
         }
       });
 
@@ -1381,11 +2012,11 @@
         if (child instanceof THREE.LineSegments && child.userData.cellIndex !== undefined) {
           const ci = child.userData.cellIndex;
           if (ci === hoveredCell && board[ci] === EMPTY) {
-            child.material.color.setHex(currentPlayer === X ? CYAN : PINK);
+            child.material.color.setHex(getPlayerColorHex(currentPlayer));
             child.material.opacity = 0.9;
           } else if (winLine && winLine.includes(ci)) {
             const winner = board[winLine[0]];
-            child.material.color.setHex(winner === X ? CYAN : PINK);
+            child.material.color.setHex(getPlayerColorHex(winner));
             child.material.opacity = 1.0;
           } else {
             child.material.color.setHex(0x2a3055);
@@ -1400,7 +2031,7 @@
           mesh.material.opacity = 0.02;
         } else if (winLine && winLine.includes(i)) {
           const winner = board[winLine[0]];
-          mesh.material.color.setHex(winner === X ? CYAN : PINK);
+          mesh.material.color.setHex(getPlayerColorHex(winner));
           mesh.material.opacity = 0.15;
         } else {
           mesh.material.color.setHex(0x151a2e);
@@ -1431,7 +2062,7 @@
         // Add a subtle point light
         const light = new THREE.PointLight(CYAN, 0.4, 3);
         glyph.add(light);
-      } else {
+      } else if (player === O) {
         // O: torus ring
         const torusGeo = new THREE.TorusGeometry(0.32, 0.05, 12, 32);
         const torusMat = new THREE.MeshPhongMaterial({
@@ -1446,8 +2077,52 @@
 
         const light = new THREE.PointLight(PINK, 0.4, 3);
         glyph.add(light);
+      } else if (player === TRIANGLE) {
+        // Triangle: 3D hollow neon triangle prism
+        const shape = new THREE.Shape();
+        const r = 0.38;
+        const sin60 = Math.sin(Math.PI / 3);
+        const cos60 = Math.cos(Math.PI / 3);
+
+        // Outer triangle
+        shape.moveTo(0, r);
+        shape.lineTo(r * sin60, -r * cos60);
+        shape.lineTo(-r * sin60, -r * cos60);
+        shape.closePath();
+
+        // Inner cutout hole
+        const hole = new THREE.Path();
+        const ir = 0.23;
+        hole.moveTo(0, ir);
+        hole.lineTo(-ir * sin60, -ir * cos60);
+        hole.lineTo(ir * sin60, -ir * cos60);
+        hole.closePath();
+        shape.holes.push(hole);
+
+        const extrudeSettings = {
+          depth: 0.08,
+          bevelEnabled: true,
+          bevelSegments: 2,
+          steps: 1,
+          bevelSize: 0.015,
+          bevelThickness: 0.015
+        };
+        const triGeo = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+        triGeo.center();
+
+        const triMat = new THREE.MeshPhongMaterial({
+          color: TRI_COLOR,
+          emissive: TRI_COLOR,
+          emissiveIntensity: 0.8,
+          transparent: true,
+          opacity: 0.9,
+        });
+        glyph = new THREE.Mesh(triGeo, triMat);
+
+        const light = new THREE.PointLight(TRI_COLOR, 0.4, 3);
+        glyph.add(light);
       }
-      glyph.position.copy(position);
+      if (glyph) glyph.position.copy(position);
       return glyph;
     }
 
@@ -1493,8 +2168,10 @@
     function drawWinLine3D(cells) {
       const positions = cells.map(ci => cellMeshes[ci].position);
       const geo = new THREE.BufferGeometry().setFromPoints(positions);
+      const winner = board[cells[0]];
+      const winColor = getPlayerColorHex(winner);
       const mat = new THREE.LineBasicMaterial({
-        color: board[cells[0]] === X ? CYAN : PINK,
+        color: winColor,
         linewidth: 2,
         transparent: true,
         opacity: 1
@@ -1506,8 +2183,8 @@
       const curve = new THREE.CatmullRomCurve3(positions);
       const tubeGeo = new THREE.TubeGeometry(curve, 20, 0.06, 8, false);
       const tubeMat = new THREE.MeshPhongMaterial({
-        color: board[cells[0]] === X ? CYAN : PINK,
-        emissive: board[cells[0]] === X ? CYAN : PINK,
+        color: winColor,
+        emissive: winColor,
         emissiveIntensity: 1.5,
         transparent: true,
         opacity: 0.7,
@@ -1532,6 +2209,7 @@
       glyphMeshes.forEach((g, i) => {
         if (g) {
           if (board[i] === O) g.rotation.z += 0.008;
+          if (board[i] === TRIANGLE) g.rotation.y += 0.012;
         }
       });
 
@@ -1555,9 +2233,14 @@
       const container = document.getElementById('flat-view');
       container.innerHTML = '';
 
+      const planesContainer = document.createElement('div');
+      planesContainer.className = 'flat-planes-container';
+      planesContainer.id = 'flatPlanesContainer';
+
       for (let y = 0; y < 3; y++) {
         const plane = document.createElement('div');
         plane.className = 'flat-plane';
+        plane.dataset.layerIndex = y;
 
         const label = document.createElement('div');
         label.className = 'flat-plane-label';
@@ -1578,7 +2261,7 @@
             cell.dataset.z = z;
 
             cell.addEventListener('click', () => {
-              if (board[ci] === EMPTY && !gameOver) {
+              if (board[ci] === EMPTY && !gameOver && !isCurrentPlayerBot()) {
                 makeMove(ci);
               }
             });
@@ -1587,11 +2270,20 @@
               if (board[ci] === EMPTY && !gameOver) {
                 playSound('hover');
                 highlightPillar(x, z, y);
+                if (!isCurrentPlayerBot()) {
+                  const ghostClass = currentPlayer === X ? 'ghost-x' : (currentPlayer === O ? 'ghost-o' : 'ghost-tri');
+                  cell.classList.add(ghostClass);
+                  cell.textContent = getPlayerSymbol(currentPlayer);
+                }
               }
             });
 
             cell.addEventListener('mouseleave', () => {
               clearPillarHighlights();
+              if (board[ci] === EMPTY) {
+                cell.classList.remove('ghost-x', 'ghost-o', 'ghost-tri');
+                cell.textContent = '';
+              }
             });
 
             grid.appendChild(cell);
@@ -1599,8 +2291,10 @@
         }
 
         plane.appendChild(grid);
-        container.appendChild(plane);
+        planesContainer.appendChild(plane);
       }
+
+      container.appendChild(planesContainer);
     }
 
     function updateFlatView() {
@@ -1616,22 +2310,9 @@
         } else if (board[ci] === O) {
           cell.classList.add('o-cell');
           cell.textContent = '◯';
-        }
-
-        // Ghost preview
-        if (board[ci] === EMPTY && !gameOver) {
-          cell.addEventListener('mouseenter', function onHover() {
-            if (board[ci] === EMPTY && !gameOver) {
-              cell.classList.add(currentPlayer === X ? 'ghost-x' : 'ghost-o');
-              cell.textContent = currentPlayer === X ? '✕' : '◯';
-            }
-          });
-          cell.addEventListener('mouseleave', function onLeave() {
-            if (board[ci] === EMPTY) {
-              cell.classList.remove('ghost-x', 'ghost-o');
-              cell.textContent = '';
-            }
-          });
+        } else if (board[ci] === TRIANGLE) {
+          cell.classList.add('tri-cell');
+          cell.textContent = '△';
         }
 
         // Win highlighting
@@ -1671,7 +2352,7 @@
       board[cellIndex] = currentPlayer;
       moveHistory.push({ player: currentPlayer, cell: cellIndex });
 
-      playSound(currentPlayer === X ? 'moveX' : 'moveO');
+      playSound(currentPlayer === X ? 'moveX' : (currentPlayer === O ? 'moveO' : 'moveTri'));
 
       // Update 3D
       placeGlyph3D(cellIndex);
@@ -1690,7 +2371,8 @@
 
         // Update score
         if (winner === X) scores.x++;
-        else scores.o++;
+        else if (winner === O) scores.o++;
+        else if (winner === TRIANGLE) scores.tri++;
         updateScoreboard();
 
         // Win visuals
@@ -1717,12 +2399,18 @@
       }
 
       // Switch player
-      currentPlayer = currentPlayer === X ? O : X;
+      if (gameMode === '3p') {
+        if (currentPlayer === X) currentPlayer = O;
+        else if (currentPlayer === O) currentPlayer = TRIANGLE;
+        else currentPlayer = X;
+      } else {
+        currentPlayer = currentPlayer === X ? O : X;
+      }
       updateTurnDisplay();
       updateMoveLog();
 
       // AI move
-      if (gameMode === 'ai' && currentPlayer === O && !gameOver) {
+      if (isCurrentPlayerBot() && !gameOver) {
         setTimeout(() => {
           const aiMove = getAIMove();
           if (aiMove !== -1) makeMove(aiMove);
@@ -1766,11 +2454,79 @@
         return available[Math.floor(Math.random() * available.length)];
       }
 
+      if (gameMode === '3p') {
+        return threePlayerAI(available, currentPlayer, aiDifficulty);
+      }
+
       if (aiDifficulty === 'medium') {
         return tacticalAI(available);
       }
 
       return cyberCoreAI(available);
+    }
+
+    function threePlayerAI(available, aiPlayer, diff) {
+      // 1. Can AI win immediately?
+      for (const move of available) {
+        board[move] = aiPlayer;
+        const win = checkWin(board);
+        board[move] = EMPTY;
+        if (win) return move;
+      }
+
+      // 2. Can any opponent win on their next turn? Block!
+      const opponents = [X, O, TRIANGLE].filter(p => p !== aiPlayer);
+      for (const opp of opponents) {
+        for (const move of available) {
+          board[move] = opp;
+          const win = checkWin(board);
+          board[move] = EMPTY;
+          if (win) return move;
+        }
+      }
+
+      // 3. Medium: take center if free, else random corner/move
+      if (diff === 'medium') {
+        if (board[13] === EMPTY) return 13;
+        const corners = [0, 2, 6, 8, 18, 20, 24, 26].filter(c => board[c] === EMPTY);
+        if (corners.length > 0 && Math.random() < 0.75) {
+          return corners[Math.floor(Math.random() * corners.length)];
+        }
+        return available[Math.floor(Math.random() * available.length)];
+      }
+
+      // 4. Cyber (Tactical positional scoring):
+      let bestScore = -Infinity;
+      let bestMove = available[0];
+      const corners = new Set([0, 2, 6, 8, 18, 20, 24, 26]);
+
+      for (const move of available) {
+        let score = 0;
+        if (move === 13) score += 15;
+        else if (corners.has(move)) score += 6;
+
+        for (const line of WIN_LINES) {
+          if (line.includes(move)) {
+            const [a, b, c] = line;
+            const vals = [board[a], board[b], board[c]];
+            const aiCount = vals.filter(v => v === aiPlayer).length;
+            const oppCount = vals.filter(v => v !== EMPTY && v !== aiPlayer).length;
+
+            if (oppCount === 0) {
+              if (aiCount === 1) score += 9;
+              else if (aiCount === 0) score += 3;
+            } else if (aiCount === 0) {
+              if (oppCount === 1) score += 4;
+            }
+          }
+        }
+        score += Math.random() * 0.6;
+        if (score > bestScore) {
+          bestScore = score;
+          bestMove = move;
+        }
+      }
+      return bestMove;
     }
 
     function tacticalAI(available) {
@@ -1934,6 +2690,22 @@
           osc.stop(now + 0.2);
         }
 
+        if (type === 'moveTri') {
+          // Resonant crystal pulse - two quick harmonics
+          [880, 1320].forEach((freq, i) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.frequency.setValueAtTime(freq, now + i * 0.05);
+            osc.type = 'triangle';
+            gain.gain.setValueAtTime(0.12, now + i * 0.05);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.05 + 0.18);
+            osc.start(now + i * 0.05);
+            osc.stop(now + i * 0.05 + 0.18);
+          });
+        }
+
         if (type === 'win') {
           // Ascending arpeggio
           const notes = [523, 659, 784, 1047, 1319];
@@ -2014,8 +2786,13 @@
     function updateTurnDisplay() {
       const el = document.getElementById('turnIndicator');
       const text = document.getElementById('turnText');
-      el.className = 'turn-indicator ' + (currentPlayer === X ? 'x-turn' : 'o-turn');
-      const label = currentPlayer === X ? 'PLAYER X' : (gameMode === 'ai' ? 'AI [O]' : 'PLAYER O');
+      el.className = 'turn-indicator ' + (currentPlayer === X ? 'x-turn' : (currentPlayer === O ? 'o-turn' : 'tri-turn'));
+      let label = 'PLAYER X';
+      if (currentPlayer === O) {
+        label = (gameMode === 'ai' ? 'AI [O]' : (gameMode === '3p' && botMode3P === '2' ? 'BOT [O]' : 'PLAYER O'));
+      } else if (currentPlayer === TRIANGLE) {
+        label = (gameMode === '3p' && (botMode3P === '1' || botMode3P === '2') ? 'BOT [△]' : 'PLAYER △');
+      }
       text.textContent = label;
     }
 
@@ -2024,8 +2801,17 @@
       if (gameOver) {
         if (winLine) {
           const winner = board[winLine[0]];
-          badge.className = 'status-badge ' + (winner === X ? 'win-x' : 'win-o');
-          badge.textContent = winner === X ? '✕ WINS' : '◯ WINS';
+          let winClass = 'win-x';
+          let winText = '✕ WINS';
+          if (winner === O) {
+            winClass = 'win-o';
+            winText = '◯ WINS';
+          } else if (winner === TRIANGLE) {
+            winClass = 'win-tri';
+            winText = '△ WINS';
+          }
+          badge.className = 'status-badge ' + winClass;
+          badge.textContent = winText;
         } else {
           badge.className = 'status-badge draw';
           badge.textContent = 'DRAW';
@@ -2039,42 +2825,80 @@
     function updateScoreboard() {
       document.getElementById('scoreX').textContent = scores.x;
       document.getElementById('scoreO').textContent = scores.o;
+      const scoreTriEl = document.getElementById('scoreTri');
+      if (scoreTriEl) scoreTriEl.textContent = scores.tri;
       document.getElementById('scoreDraw').textContent = scores.draw;
+
+      // Mobile Quick Ribbon
+      const mobX = document.getElementById('mobScoreX');
+      const mobO = document.getElementById('mobScoreO');
+      const mobTri = document.getElementById('mobScoreTri');
+      const mobDraw = document.getElementById('mobScoreDraw');
+      if (mobX) mobX.textContent = scores.x;
+      if (mobO) mobO.textContent = scores.o;
+      if (mobTri) mobTri.textContent = scores.tri;
+      if (mobDraw) mobDraw.textContent = scores.draw;
     }
 
     function updateMoveLog() {
-      document.getElementById('moveCount').textContent = `${moveHistory.length} / 27`;
+      const moveStr = `${moveHistory.length} / 27`;
+      document.getElementById('moveCount').textContent = moveStr;
+      const modalMoveCount = document.getElementById('modalMoveCount');
+      if (modalMoveCount) modalMoveCount.textContent = `${moveHistory.length}/27`;
 
       const log = document.getElementById('historyLog');
-      log.innerHTML = '';
+      const modalLog = document.getElementById('modalHistoryLog');
+      if (log) log.innerHTML = '';
+      if (modalLog) modalLog.innerHTML = '';
+
       moveHistory.forEach((m, i) => {
-        const entry = document.createElement('div');
-        entry.className = `history-entry ${m.player === X ? 'x-move' : 'o-move'}`;
-        entry.innerHTML = `
-      <span class="move-num">#${i + 1}</span>
-      <span class="move-player">${m.player === X ? '✕' : '◯'}</span>
-      <span class="move-pos">${coordLabel(m.cell)}</span>
-    `;
-        log.prepend(entry);
+        const pClass = m.player === X ? 'x-move' : (m.player === O ? 'o-move' : 'tri-move');
+        const html = `
+          <span class="move-num">#${i + 1}</span>
+          <span class="move-player">${getPlayerSymbol(m.player)}</span>
+          <span class="move-pos">${coordLabel(m.cell)}</span>
+        `;
+        if (log) {
+          const entry = document.createElement('div');
+          entry.className = `history-entry ${pClass}`;
+          entry.innerHTML = html;
+          log.prepend(entry);
+        }
+        if (modalLog) {
+          const mEntry = document.createElement('div');
+          mEntry.className = `history-entry ${pClass}`;
+          mEntry.innerHTML = html;
+          modalLog.prepend(mEntry);
+        }
       });
     }
 
     function updateLinesChecklist() {
       const container = document.getElementById('linesChecklist');
-      container.innerHTML = '';
+      const modalContainer = document.getElementById('modalLinesChecklist');
+      if (container) container.innerHTML = '';
+      if (modalContainer) modalContainer.innerHTML = '';
+
       WIN_LINES.forEach((line, i) => {
         const [a, b, c] = line;
         const item = document.createElement('div');
-        item.className = 'line-item';
         const label = WIN_LINE_LABELS[i];
+        const isWon = board[a] !== EMPTY && board[a] === board[b] && board[b] === board[c];
+        const wonClass = isWon ? (board[a] === X ? 'x-won' : (board[a] === O ? 'o-won' : 'tri-won')) : '';
+        const text = isWon ? `✓ ${label}` : label;
 
-        if (board[a] !== EMPTY && board[a] === board[b] && board[b] === board[c]) {
-          item.classList.add(board[a] === X ? 'x-won' : 'o-won');
-          item.textContent = `✓ ${label}`;
-        } else {
-          item.textContent = label;
+        if (container) {
+          const cItem = document.createElement('div');
+          cItem.className = 'line-item' + (wonClass ? ' ' + wonClass : '');
+          cItem.textContent = text;
+          container.appendChild(cItem);
         }
-        container.appendChild(item);
+        if (modalContainer) {
+          const mItem = document.createElement('div');
+          mItem.className = 'line-item' + (wonClass ? ' ' + wonClass : '');
+          mItem.textContent = text;
+          modalContainer.appendChild(mItem);
+        }
       });
     }
 
@@ -2091,15 +2915,62 @@
       document.getElementById('viewModeBadge').textContent = mode === '3d' ? '3D SPATIAL' : '2D PLANES';
       document.getElementById('panel3DControls').style.display = mode === '3d' ? 'block' : 'none';
 
+      // Mobile controls
+      const mobBtnIcon = document.getElementById('mobBtnViewIcon');
+      if (mobBtnIcon) mobBtnIcon.textContent = mode === '3d' ? '▦ 2D' : '◈ 3D';
+
+      const mob3dDock = document.getElementById('mobile3DDock');
+      if (mob3dDock) {
+        if (mode === '3d') {
+          mob3dDock.classList.add('visible');
+        } else {
+          mob3dDock.classList.remove('visible');
+        }
+      }
+
       if (mode === '2d') updateFlatView();
       if (mode === '3d') onResize();
+    }
+
+    function toggleViewModeMobile() {
+      setViewMode(viewMode === '3d' ? '2d' : '3d');
     }
 
     function setGameMode(mode) {
       gameMode = mode;
       document.getElementById('btnPvP').classList.toggle('active', mode === 'pvp');
+      const btn3P = document.getElementById('btn3P');
+      if (btn3P) btn3P.classList.toggle('active', mode === '3p');
       document.getElementById('btnPvAI').classList.toggle('active', mode === 'ai');
-      document.getElementById('aiSettings').style.display = mode === 'ai' ? 'block' : 'none';
+
+      const is3P = mode === '3p';
+      const threeSettings = document.getElementById('threePlayerSettings');
+      if (threeSettings) threeSettings.style.display = is3P ? 'block' : 'none';
+
+      const cardTri = document.getElementById('scoreCardTri');
+      if (cardTri) cardTri.style.display = is3P ? 'flex' : 'none';
+
+      const mobTriWrap = document.getElementById('mobScoreTriWrap');
+      if (mobTriWrap) mobTriWrap.style.display = is3P ? 'inline-flex' : 'none';
+
+      updateAISettingsVisibility();
+      resetGame();
+    }
+
+    function updateAISettingsVisibility() {
+      const showAI = (gameMode === 'ai') || (gameMode === '3p' && botMode3P !== '0');
+      document.getElementById('aiSettings').style.display = showAI ? 'block' : 'none';
+    }
+
+    function set3PBotMode(val) {
+      botMode3P = val;
+      const b0 = document.getElementById('btn3pHumans');
+      const b1 = document.getElementById('btn3p1Bot');
+      const b2 = document.getElementById('btn3p2Bots');
+      if (b0) b0.classList.toggle('active', val === '0');
+      if (b1) b1.classList.toggle('active', val === '1');
+      if (b2) b2.classList.toggle('active', val === '2');
+      updateAISettingsVisibility();
       resetGame();
     }
 
@@ -2145,7 +3016,54 @@
       document.getElementById('btnL1').classList.toggle('active', layer === 1);
       document.getElementById('btnL2').classList.toggle('active', layer === 2);
       document.getElementById('btnLAll').classList.toggle('active', layer === -1);
+
+      // Mobile 3D dock layer buttons
+      const mb0 = document.getElementById('mobL0');
+      const mb1 = document.getElementById('mobL1');
+      const mb2 = document.getElementById('mobL2');
+      const mbAll = document.getElementById('mobLAll');
+      if (mb0) mb0.classList.toggle('active', layer === 0);
+      if (mb1) mb1.classList.toggle('active', layer === 1);
+      if (mb2) mb2.classList.toggle('active', layer === 2);
+      if (mbAll) mbAll.classList.toggle('active', layer === -1);
+
       updateCellPositions();
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // Mobile Telemetry Modal & Handlers
+    // ═══════════════════════════════════════════════════════════════
+
+    function openStatsModal() {
+      const modal = document.getElementById('statsModal');
+      if (modal) {
+        modal.classList.add('open');
+        updateMoveLog();
+        updateLinesChecklist();
+      }
+    }
+
+    function closeStatsModal() {
+      const modal = document.getElementById('statsModal');
+      if (modal) modal.classList.remove('open');
+    }
+
+    function onStatsModalClick(e) {
+      if (e.target.id === 'statsModal') {
+        closeStatsModal();
+      }
+    }
+
+    function switchModalTab(tab) {
+      const isMoves = tab === 'moves';
+      const tabM = document.getElementById('modalTabMoves');
+      const tabL = document.getElementById('modalTabLines');
+      const viewM = document.getElementById('modalMoveLogView');
+      const viewL = document.getElementById('modalLinesView');
+      if (tabM) tabM.classList.toggle('active', isMoves);
+      if (tabL) tabL.classList.toggle('active', !isMoves);
+      if (viewM) viewM.classList.toggle('active', isMoves);
+      if (viewL) viewL.classList.toggle('active', !isMoves);
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -2162,9 +3080,10 @@
         p.style.animationDuration = (8 + Math.random() * 15) + 's';
         p.style.animationDelay = (Math.random() * 10) + 's';
         p.style.width = (1 + Math.random() * 2) + 'px';
-        p.style.height = p.style.width;
-        if (Math.random() > 0.5) p.style.background = '#ff0055';
-        else if (Math.random() > 0.5) p.style.background = '#8a2be2';
+        const rand = Math.random();
+        if (rand < 0.33) p.style.background = '#00f0ff';
+        else if (rand < 0.66) p.style.background = '#ff0055';
+        else p.style.background = '#00ff88';
         container.appendChild(p);
       }
     }

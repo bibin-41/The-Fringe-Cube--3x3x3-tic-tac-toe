@@ -1,3 +1,7 @@
+import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import './style.css';
+
 // ═══════════════════════════════════════════════════════════════
 // HYPERGRID // 3X3X3  —  Game Engine
 // ═══════════════════════════════════════════════════════════════
@@ -193,7 +197,7 @@ function init3D() {
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.setClearColor(0x07080d, 1);
 
-  controls = new THREE.OrbitControls(camera, renderer.domElement);
+  controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
   controls.dampingFactor = 0.08;
   controls.minDistance = 5;

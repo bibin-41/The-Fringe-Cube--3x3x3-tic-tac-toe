@@ -276,6 +276,62 @@
             </div>
           </div>
 
+          <!-- Multiplayer Mode -->
+          <div
+            id="humanPlaySetup"
+            class="mode-submenu"
+            style="display: none; margin-top: 10px"
+          >
+            <div class="control-label" style="margin-bottom: 6px">
+              Multiplayer Mode
+            </div>
+            <div class="btn-row">
+              <button
+                id="btnPassAndPlay"
+                class="btn active"
+                onclick="setHumanPlaySetup('pass')"
+                title="Players take turns on this screen"
+              >
+                PASS &amp; PLAY
+              </button>
+              <button
+                id="btnRemotePlay"
+                class="btn"
+                onclick="setHumanPlaySetup('remote')"
+                title="Players join from separate screens"
+              >
+                REMOTE PLAY
+              </button>
+            </div>
+            <div
+              id="remoteRoomOptions"
+              class="mode-submenu"
+              style="display: none; margin-top: 10px"
+            >
+              <div class="control-label" style="margin-bottom: 6px">
+                Online Match
+              </div>
+              <div class="btn-row">
+                <button
+                  id="btnCreateRoom"
+                  class="btn"
+                  onclick="setRemoteRoomAction('create')"
+                  title="Start a new online match"
+                >
+                  CREATE ROOM
+                </button>
+                <button
+                  id="btnJoinRoom"
+                  class="btn"
+                  onclick="setRemoteRoomAction('join')"
+                  title="Join an online match"
+                >
+                  JOIN ROOM
+                </button>
+              </div>
+            </div>
+          </div>
+
           <!-- AI Difficulty Submenu -->
           <div
             id="aiSettings"

@@ -24,6 +24,8 @@ let winLine = null;
 let viewMode = '2d'; // '3d' or '2d'
 let primaryMode = '2p'; // '2p' or '3p' (Default: 2P)
 let mode2P = 'ai'; // 'human' or 'ai' (Default: vs AI)
+let humanPlaySetup = 'pass';
+let remoteRoomAction = null;
 let gameMode = 'ai'; // 'ai' (2P vs AI default), 'pvp' (2P), or '3p' (3P)
 let botMode3P = '0'; // '0': 3 Humans, '1': 2 Humans & 1Bot, '2': 1 Human and 2 Bots
 let aiDifficulty = 'medium'; // Default: 'medium'
@@ -1528,6 +1530,7 @@ function setPrimaryMode(mode) {
   }
 
   updateAISettingsVisibility();
+  updateHumanPlaySetupVisibility();
   resetGame();
 }
 
@@ -1539,6 +1542,7 @@ function set2PMode(type) {
   if (bHuman) bHuman.classList.toggle('active', type === 'human');
   if (bAI) bAI.classList.toggle('active', type === 'ai');
   updateAISettingsVisibility();
+  updateHumanPlaySetupVisibility();
   resetGame();
 }
 
@@ -1552,7 +1556,43 @@ function set3PMode(val) {
   if (b1) b1.classList.toggle('active', val === '1');
   if (b2) b2.classList.toggle('active', val === '2');
   updateAISettingsVisibility();
+  updateHumanPlaySetupVisibility();
   resetGame();
+}
+
+function updateHumanPlaySetupVisibility() {
+  const showSetup =
+    (primaryMode === '2p' && mode2P === 'human') ||
+    (primaryMode === '3p' && botMode3P !== '2');
+  const setupPanel = document.getElementById('humanPlaySetup');
+  const passButton = document.getElementById('btnPassAndPlay');
+  const remoteButton = document.getElementById('btnRemotePlay');
+  const roomOptions = document.getElementById('remoteRoomOptions');
+  const createRoomButton = document.getElementById('btnCreateRoom');
+  const joinRoomButton = document.getElementById('btnJoinRoom');
+
+  if (setupPanel) setupPanel.style.display = showSetup ? 'block' : 'none';
+  if (passButton)
+    passButton.classList.toggle('active', humanPlaySetup === 'pass');
+  if (remoteButton)
+    remoteButton.classList.toggle('active', humanPlaySetup === 'remote');
+  if (roomOptions)
+    roomOptions.style.display =
+      showSetup && humanPlaySetup === 'remote' ? 'block' : 'none';
+  if (createRoomButton)
+    createRoomButton.classList.toggle('active', remoteRoomAction === 'create');
+  if (joinRoomButton)
+    joinRoomButton.classList.toggle('active', remoteRoomAction === 'join');
+}
+
+function setHumanPlaySetup(setup) {
+  humanPlaySetup = setup;
+  updateHumanPlaySetupVisibility();
+}
+
+function setRemoteRoomAction(action) {
+  remoteRoomAction = action;
+  updateHumanPlaySetupVisibility();
 }
 
 function updateAISettingsVisibility() {
@@ -1975,7 +2015,9 @@ Object.assign(window, {
   setDifficulty,
   setExplode,
   setGameMode,
+  setHumanPlaySetup,
   setPrimaryMode,
+  setRemoteRoomAction,
   setViewMode,
   switchGuideTab,
   switchModalTab,

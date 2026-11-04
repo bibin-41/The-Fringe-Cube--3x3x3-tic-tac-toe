@@ -3,6 +3,9 @@ import { state } from '../state.js';
 
 const GAME_ID =
   import.meta.env.VITE_POKI_GAME_ID || '45b0e470-c065-48ce-8df9-713c089064e8';
+const HOST_CONNECTION_TIMEOUT_MS = 15_000;
+let hostConnectionTimeout = null;
+let hostPageHideHandler = null;
 
 function getHumanSymbols(config = getLocalConfiguration()) {
   if (config.gameMode !== '3p') return [state.X, state.O];
@@ -153,7 +156,9 @@ function updateConnectionStatus() {
 
   if (state.remoteReadyToPlay) {
     const turn =
-      state.currentPlayer === state.localPlayerSymbol ? 'Your turn.' : 'Opponent turn.';
+      state.currentPlayer === state.localPlayerSymbol
+        ? 'Your turn.'
+        : 'Opponent turn.';
     setRoomStatus(`All players connected. ${turn}`);
     if (!wasReady) {
       state.showWarning?.('All players joined! Ready to play.', 'success');
@@ -167,6 +172,100 @@ function updateConnectionStatus() {
   updateMultiplayerStatusDot();
 }
 state.updateRemoteConnectionStatus = updateConnectionStatus;
+
+function clearHostConnectionTimeout() {
+  if (hostConnectionTimeout !== null) {
+    clearTimeout(hostConnectionTimeout);
+    hostConnectionTimeout = null;
+  }
+}
+
+function endRemoteRoom(message) {
+  clearHostConnectionTimeout();
+  state.closeRemotePlay();
+  state.resetGame({ broadcast: false });
+  setRoomStatus(message);
+  updateRoomDisplay();
+  state.showWarning?.(message);
+}
+
+function closeHostRoom(network) {
+  network.broadcast('reliable', JSON.stringify({ type: 'roomClosed' }));
+  const maxPlayers = Math.max(
+    network.size + 1,
+    network.currentLobbyInfo?.playerCount ?? 1,
+  );
+  const settingsRequest = network.setLobbySettings({
+    maxPlayers,
+    canUpdateBy: 'none',
+    customData: {
+      ...network.currentLobbyInfo?.customData,
+      closed: true,
+    },
+  });
+  let closed = false;
+  let updateConfirmed = false;
+  let closeTimeout;
+  const finishClose = () => {
+    if (closed) return;
+    closed = true;
+    clearTimeout(closeTimeout);
+    network.off('lobbyUpdated', onLobbyUpdated);
+    network.close('host left room');
+  };
+  const onLobbyUpdated = (code, settings) => {
+    if (code !== network.currentLobby || settings.customData?.closed !== true)
+      return;
+    updateConfirmed = true;
+    finishClose();
+  };
+  network.on('lobbyUpdated', onLobbyUpdated);
+
+  settingsRequest.then(
+    (result) => {
+      if (result instanceof Error && !updateConfirmed) {
+        console.error(
+          'Unable to close Poki Netlib room to new players:',
+          result,
+        );
+      }
+      finishClose();
+    },
+    (error) => {
+      if (!closed) {
+        console.error(
+          'Unable to close Poki Netlib room to new players:',
+          error,
+        );
+      }
+      finishClose();
+    },
+  );
+  closeTimeout = setTimeout(() => {
+    if (!updateConfirmed) {
+      console.error('Timed out while closing Poki Netlib room to new players.');
+    }
+    finishClose();
+  }, 5000);
+}
+
+function watchHostPageHide(network, session) {
+  clearHostPageHideHandler();
+  hostPageHideHandler = () => {
+    hostPageHideHandler = null;
+    if (session === state.networkSession && state.network === network) {
+      closeHostRoom(network);
+    }
+  };
+  window.addEventListener('pagehide', hostPageHideHandler, { once: true });
+}
+
+function clearHostPageHideHandler() {
+  if (hostPageHideHandler !== null) {
+    window.removeEventListener('pagehide', hostPageHideHandler);
+    hostPageHideHandler = null;
+  }
+}
 
 function getNextSymbol() {
   const used = new Set(state.remotePlayers.map((player) => player.symbol));
@@ -249,22 +348,32 @@ function setRemoteConfiguration(config) {
   state.remoteConfigApplied = true;
   state.remoteGameStateReady = state.remoteIsHost;
 
-  document.getElementById('btnMode2P')?.classList.toggle('active', config.gameMode === '2p');
-  document.getElementById('btnMode3P')?.classList.toggle('active', config.gameMode === '3p');
+  document
+    .getElementById('btnMode2P')
+    ?.classList.toggle('active', config.gameMode === '2p');
+  document
+    .getElementById('btnMode3P')
+    ?.classList.toggle('active', config.gameMode === '3p');
   document.getElementById('submenu2P').style.display =
     config.gameMode === '2p' ? 'block' : 'none';
   document.getElementById('submenu3P').style.display =
     config.gameMode === '3p' ? 'block' : 'none';
-  document.getElementById('btn2pHuman')?.classList.toggle('active', config.gameMode === '2p');
+  document
+    .getElementById('btn2pHuman')
+    ?.classList.toggle('active', config.gameMode === '2p');
   document.getElementById('btn2pAI')?.classList.toggle('active', false);
-  document.getElementById('btn3pHumans')?.classList.toggle(
-    'active',
-    config.gameMode === '3p' && config.botMode3P === '0',
-  );
-  document.getElementById('btn3p1Bot')?.classList.toggle(
-    'active',
-    config.gameMode === '3p' && config.botMode3P === '1',
-  );
+  document
+    .getElementById('btn3pHumans')
+    ?.classList.toggle(
+      'active',
+      config.gameMode === '3p' && config.botMode3P === '0',
+    );
+  document
+    .getElementById('btn3p1Bot')
+    ?.classList.toggle(
+      'active',
+      config.gameMode === '3p' && config.botMode3P === '1',
+    );
   document.getElementById('btn3p2Bots')?.classList.toggle('active', false);
   state.updateAISettingsVisibility();
   state.updateHumanPlaySetupVisibility();
@@ -275,7 +384,8 @@ function setRemoteConfiguration(config) {
 function handleRoster(peer, data) {
   if (state.remoteIsHost || peer.id !== state.remoteHostId) return;
   if (!Array.isArray(data.players)) return;
-  if (!state.remoteConfigApplied && !setRemoteConfiguration(data.config)) return;
+  if (!state.remoteConfigApplied && !setRemoteConfiguration(data.config))
+    return;
   state.remotePlayers = data.players;
   const localPlayer = state.remotePlayers.find(
     (player) => player.id === state.network.id,
@@ -287,6 +397,7 @@ function handleRoster(peer, data) {
     setRoomStatus('Unable to synchronize the current match state.', true);
     return;
   }
+  clearHostConnectionTimeout();
   updateConnectionStatus();
   if (state.localPlayerSymbol === null) {
     setRoomStatus('Room is full. You were not assigned a player slot.', true);
@@ -304,7 +415,8 @@ function applyGameStateSnapshot(snapshot) {
       (key) =>
         Number.isInteger(snapshot.scores[key]) && snapshot.scores[key] >= 0,
     )
-  ) return false;
+  )
+    return false;
 
   const board = new Array(state.board.length).fill(state.EMPTY);
   let currentPlayer = state.X;
@@ -321,7 +433,8 @@ function applyGameStateSnapshot(snapshot) {
       move.cell < 0 ||
       move.cell >= board.length ||
       board[move.cell] !== state.EMPTY
-    ) return false;
+    )
+      return false;
 
     board[move.cell] = move.player;
     moveHistory.push({ player: move.player, cell: move.cell });
@@ -347,7 +460,8 @@ function applyGameStateSnapshot(snapshot) {
     snapshot.currentPlayer !== currentPlayer ||
     snapshot.gameOver !== gameOver ||
     !sameArray(snapshot.winLine, result?.line ?? null)
-  ) return false;
+  )
+    return false;
 
   const sameMatch =
     state.currentPlayer === currentPlayer &&
@@ -420,6 +534,10 @@ function handleMessage(peer, message) {
     if (addOrUpdatePlayer(peer.id, data.name)) broadcastRoster();
     return;
   }
+  if (data.type === 'roomClosed' && peer.id === state.remoteHostId) {
+    endRemoteRoom('The host closed the room.');
+    return;
+  }
   if (data.type === 'roster') {
     handleRoster(peer, data);
     return;
@@ -434,7 +552,8 @@ function handleMessage(peer, message) {
       !Number.isInteger(data.cell) ||
       data.cell < 0 ||
       data.cell >= state.board.length
-    ) return;
+    )
+      return;
 
     state.makeMove(data.cell, { fromNetwork: true });
     if (state.remoteIsHost) {
@@ -445,7 +564,10 @@ function handleMessage(peer, message) {
     }
     return;
   }
-  if (data.type === 'reset' && state.remotePlayers.some((player) => player.id === peer.id)) {
+  if (
+    data.type === 'reset' &&
+    state.remotePlayers.some((player) => player.id === peer.id)
+  ) {
     state.resetGame({ broadcast: false });
   }
 }
@@ -522,54 +644,88 @@ function startRemoteNetwork(action, roomCode = '') {
     state.remoteIsHost = info.creator === network.id;
     state.remoteHostId = info.creator;
 
+    if (!state.remoteIsHost && info.customData?.closed) {
+      failRemoteSession(
+        'This room was closed by the host. Ask them to create a new room.',
+      );
+      return;
+    }
+
     if (state.remoteIsHost && !setRemoteConfiguration(config)) return;
     if (state.remoteIsHost) {
       state.localPlayerSymbol = state.X;
       state.remotePlayers = [
-        { id: network.id, name: config.playerName, symbol: state.X, connected: true },
+        {
+          id: network.id,
+          name: config.playerName,
+          symbol: state.X,
+          connected: true,
+        },
       ];
+      watchHostPageHide(network, session);
       setRoomStatus('Room created. Share the code to invite players.');
     } else {
       state.remotePlayers = [
-        { id: network.id, name: config.playerName, symbol: null, connected: true },
+        {
+          id: network.id,
+          name: config.playerName,
+          symbol: null,
+          connected: true,
+        },
       ];
       setRoomStatus('Joined room. Waiting for the host to assign players…');
       for (const peer of network.peers.values()) {
-        network.send('reliable', peer.id, JSON.stringify({ type: 'hello', name: config.playerName }));
+        network.send(
+          'reliable',
+          peer.id,
+          JSON.stringify({ type: 'hello', name: config.playerName }),
+        );
       }
     }
     updateRoomDisplay();
     if (state.remoteIsHost) broadcastRoster();
+    if (!state.remoteIsHost) {
+      clearHostConnectionTimeout();
+      hostConnectionTimeout = setTimeout(() => {
+        if (
+          session === state.networkSession &&
+          !state.remoteIsHost &&
+          !state.remoteGameStateReady
+        ) {
+          endRemoteRoom(
+            'The host is no longer available. Join a newly created room.',
+          );
+        }
+      }, HOST_CONNECTION_TIMEOUT_MS);
+    }
   });
 
   network.on('connected', (peer) => {
     if (session !== state.networkSession) return;
     if (state.remoteIsHost) {
-      if (addOrUpdatePlayer(peer.id, `Player ${state.remotePlayers.length + 1}`)) {
+      if (
+        addOrUpdatePlayer(peer.id, `Player ${state.remotePlayers.length + 1}`)
+      ) {
         broadcastRoster();
       }
     } else {
-      network.send('reliable', peer.id, JSON.stringify({ type: 'hello', name: config.playerName }));
+      network.send(
+        'reliable',
+        peer.id,
+        JSON.stringify({ type: 'hello', name: config.playerName }),
+      );
     }
   });
 
   network.on('left', () => {
     if (session !== state.networkSession) return;
-    state.closeRemotePlay();
-    state.resetGame({ broadcast: false });
-    setRoomStatus('The room was closed.');
-    updateRoomDisplay();
-    state.showWarning?.('The room was closed.', 'info');
+    endRemoteRoom('The room was closed.');
   });
 
   network.on('disconnected', (peer) => {
     if (session !== state.networkSession) return;
     if (!state.remoteIsHost && peer.id === state.remoteHostId) {
-      state.closeRemotePlay();
-      state.resetGame({ broadcast: false });
-      setRoomStatus('The host disconnected. The room is no longer available.');
-      updateRoomDisplay();
-      state.showWarning?.('The host disconnected. The room is no longer available.');
+      endRemoteRoom('The host disconnected. Join a newly created room.');
       return;
     }
     const player = state.remotePlayers.find((entry) => entry.id === peer.id);
@@ -579,6 +735,16 @@ function startRemoteNetwork(action, roomCode = '') {
     }
     if (state.remoteIsHost) broadcastRoster();
     updateConnectionStatus();
+  });
+
+  network.on('leader', (leader) => {
+    if (
+      session === state.networkSession &&
+      !state.remoteIsHost &&
+      leader !== state.remoteHostId
+    ) {
+      endRemoteRoom('The host left. Join a newly created room.');
+    }
   });
 
   network.on('reconnected', (peer) => {
@@ -605,7 +771,10 @@ function startRemoteNetwork(action, roomCode = '') {
     }
     console.error('Poki Netlib signaling error:', error);
     state.remoteConnecting = false;
-    setRoomStatus(getRoomErrorMessage(error, 'Poki Netlib signaling error.'), true);
+    setRoomStatus(
+      getRoomErrorMessage(error, 'Poki Netlib signaling error.'),
+      true,
+    );
     updateRoomDisplay();
   });
   network.on('rtcerror', (error) => {
@@ -622,7 +791,10 @@ function startRemoteNetwork(action, roomCode = '') {
       return;
     }
     state.remoteConnecting = false;
-    setRoomStatus('Connection failed. Try creating or joining the room again.', true);
+    setRoomStatus(
+      'Connection failed. Try creating or joining the room again.',
+      true,
+    );
     updateRoomDisplay();
   });
 }
@@ -641,9 +813,9 @@ state.broadcastRemoteMessage = function broadcastRemoteMessage(message) {
 state.createRemoteRoom = function createRemoteRoom() {
   if (
     state.network &&
-    (state.remoteConnecting ||
-      (state.remoteIsHost && state.remoteRoomCode))
-  ) return;
+    (state.remoteConnecting || (state.remoteIsHost && state.remoteRoomCode))
+  )
+    return;
   startRemoteNetwork('create');
 };
 
@@ -678,7 +850,15 @@ state.leaveRemoteRoom = function leaveRemoteRoom() {
 
 state.closeRemotePlay = function closeRemotePlay() {
   state.networkSession++;
-  if (state.network) state.network.close('left room');
+  clearHostConnectionTimeout();
+  clearHostPageHideHandler();
+  if (state.network) {
+    if (state.remoteIsHost && state.network.currentLobby) {
+      closeHostRoom(state.network);
+    } else {
+      state.network.close('left room');
+    }
+  }
   state.network = null;
   state.remoteRoomCode = '';
   state.remotePlayers = [];

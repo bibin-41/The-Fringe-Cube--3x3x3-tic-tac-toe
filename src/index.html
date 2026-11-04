@@ -1,932 +1,683 @@
 <!doctype html>
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="alternate icon" href="/favicon.svg" />
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>The Fringe Cube - 3D tic-tac-toe</title>
-    <meta
-      name="description"
-      content="Play The Fringe Cube 3D, an interactive 3D tic-tac-toe browser game. Master 27 cells across a 3x3x3 grid and find all 49 winning lines right in your browser.Solve puzzles, test your reflexes, and experience interactive web gameplay online for free."
-    />
-    <meta
-      name="keywords"
-      content="the fringe cube, fringe cube game, online puzzle game, browser game, free web games"
-    />
-    <link rel="canonical" href="https://thefringecube.web.app/" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="alternate icon" href="/favicon.svg" />
 
-    <!-- Open Graph tags -->
-    <meta
-      property="og:title"
-      content="The Fringe Cube 3D tic-tac-toe. Free Online 3D Game"
-    />
-    <meta
-      property="og:description"
-      content="Play The Fringe Cube 3D tic-tac-toe in your browser. Free online puzzle and reflex game."
-    />
-    <meta property="og:url" content="https://thefringecube.web.app/" />
-    <meta property="og:type" content="website" />
+  <title>The Fringe Cube - 3D tic-tac-toe</title>
+  <meta name="description"
+    content="Play The Fringe Cube 3D, an interactive 3D tic-tac-toe browser game. Master 27 cells across a 3x3x3 grid and find all 49 winning lines right in your browser.Solve puzzles, test your reflexes, and experience interactive web gameplay online for free." />
+  <meta name="keywords" content="the fringe cube, fringe cube game, online puzzle game, browser game, free web games" />
+  <link rel="canonical" href="https://thefringecube.web.app/" />
 
-    <!-- Twitter tags -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta
-      name="twitter:title"
-      content="The Fringe Cube - Free Online Browser Game"
-    />
-    <meta
-      name="twitter:description"
-      content="Play The Fringe Cube directly in your browser."
-    />
+  <!-- Open Graph tags -->
+  <meta property="og:title" content="The Fringe Cube 3D tic-tac-toe. Free Online 3D Game" />
+  <meta property="og:description"
+    content="Play The Fringe Cube 3D tic-tac-toe in your browser. Free online puzzle and reflex game." />
+  <meta property="og:url" content="https://thefringecube.web.app/" />
+  <meta property="og:type" content="website" />
 
-    <!-- Search Console verification placeholder -->
-    <meta
-      name="google-site-verification"
-      content="2N1AhqALRfLTa6kBXHZKf00gzVb0dXN1YZLW1Xkj3gY"
-    />
+  <!-- Twitter tags -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="The Fringe Cube - Free Online Browser Game" />
+  <meta name="twitter:description" content="Play The Fringe Cube directly in your browser." />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-  </head>
+  <!-- Search Console verification placeholder -->
+  <meta name="google-site-verification" content="2N1AhqALRfLTa6kBXHZKf00gzVb0dXN1YZLW1Xkj3gY" />
 
-  <body>
-    <!-- Ambient particles -->
-    <div id="particles"></div>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="./style.css" />
+</head>
 
-    <div id="app">
-      <!-- ═══ Top Bar ═══ -->
-      <div
-        id="sidebarOverlay"
-        class="sidebar-overlay"
-        onclick="toggleSidebar()"
-      ></div>
-      <header id="topbar">
-        <div style="display: flex; align-items: center; gap: 10px">
-          <button
-            class="hamburger-btn"
-            id="hamburgerBtn"
-            onclick="toggleSidebar()"
-            title="Menu"
-          >
-            <span></span><span></span><span></span>
-          </button>
-          <h1 class="logo">
-            <span class="logo-full"
-              >THE FRINGE CUBE <span class="logo-accent">3x3x3</span></span
-            >
-            <span class="logo-short"
-              >FRINGE <span class="logo-accent">3³</span></span
-            >
-          </h1>
+<body>
+  <!-- Ambient particles -->
+  <div id="particles"></div>
+
+  <div id="app">
+    <!-- ═══ Top Bar ═══ -->
+    <div id="sidebarOverlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
+    <header id="topbar">
+      <div style="display: flex; align-items: center; gap: 10px">
+        <button class="hamburger-btn" id="hamburgerBtn" onclick="toggleSidebar()" title="Menu">
+          <span></span><span></span><span></span>
+        </button>
+        <h1 class="logo">
+          <span class="logo-full">THE FRINGE CUBE <span class="logo-accent">3x3x3</span></span>
+          <span class="logo-short">FRINGE <span class="logo-accent">3³</span></span>
+        </h1>
+      </div>
+      <div class="topbar-center">
+        <div id="turnIndicator" class="turn-indicator x-turn">
+          <div class="turn-dot"></div>
+          <span id="turnText">PLAYER X</span>
         </div>
-        <div class="topbar-center">
-          <div id="turnIndicator" class="turn-indicator x-turn">
-            <div class="turn-dot"></div>
-            <span id="turnText">PLAYER X</span>
-          </div>
-          <div id="statusBadge" class="status-badge active">ACTIVE</div>
-        </div>
-        <div class="topbar-right">
-          <button
-            id="btnAudio"
-            class="btn btn-icon"
-            title="Toggle Audio"
-            onclick="toggleAudio()"
-          >
-            🔊
-          </button>
-          <button
-            class="btn btn-reset"
-            onclick="resetGame()"
-            title="Reset Game"
-          >
-            <span class="reset-text">⟳ RESET</span>
-            <span class="reset-icon">⟳</span>
-          </button>
-        </div>
-      </header>
+        <div id="statusBadge" class="status-badge active">ACTIVE</div>
+      </div>
+      <div class="topbar-right">
+        <button id="btnAudio" class="btn btn-icon" title="Toggle Audio" onclick="toggleAudio()">
+          🔊
+        </button>
+        <button class="btn btn-reset" onclick="resetGame()" title="Reset Game">
+          <span class="reset-text">⟳ RESET</span>
+          <span class="reset-icon">⟳</span>
+        </button>
+      </div>
+    </header>
 
-      <!-- ═══ Mobile Quick Score Ribbon ═══ -->
-      <div id="mobileScoreRibbon" class="mobile-score-ribbon">
-        <div class="mob-scores">
-          <div class="mob-score mob-x">
-            <span class="sym">✕</span> <span id="mobScoreX">0</span>
-          </div>
-          <div class="mob-score mob-o">
-            <span class="sym">◯</span> <span id="mobScoreO">0</span>
-          </div>
-          <div
-            class="mob-score mob-tri"
-            id="mobScoreTriWrap"
-            style="display: none"
-          >
-            <span class="sym">△</span> <span id="mobScoreTri">0</span>
-          </div>
-          <div class="mob-score mob-draw">
-            <span class="sym">D</span> <span id="mobScoreDraw">0</span>
-          </div>
+    <!-- ═══ Mobile Quick Score Ribbon ═══ -->
+    <div id="mobileScoreRibbon" class="mobile-score-ribbon">
+      <div class="mob-scores">
+        <div class="mob-score mob-x">
+          <span class="sym">✕</span> <span id="mobScoreX">0</span>
         </div>
-        <div class="mob-actions">
-          <button
-            id="mobBtnResult"
-            class="mob-action-btn"
-            onclick="reopenGameOverModal()"
-            title="View Match Result"
-            style="
+        <div class="mob-score mob-o">
+          <span class="sym">◯</span> <span id="mobScoreO">0</span>
+        </div>
+        <div class="mob-score mob-tri" id="mobScoreTriWrap" style="display: none">
+          <span class="sym">△</span> <span id="mobScoreTri">0</span>
+        </div>
+        <div class="mob-score mob-draw">
+          <span class="sym">D</span> <span id="mobScoreDraw">0</span>
+        </div>
+      </div>
+      <div class="mob-actions">
+        <button id="mobBtnResult" class="mob-action-btn" onclick="reopenGameOverModal()" title="View Match Result"
+          style="
               display: none;
               color: var(--cyan);
               border-color: rgba(0, 240, 255, 0.4);
-            "
-          >
-            🏆 RESULT
+            ">
+          🏆 RESULT
+        </button>
+        <button id="mobBtnViewToggle" class="mob-action-btn" onclick="toggleViewModeMobile()" title="Switch 2D / 3D">
+          <span id="mobBtnViewIcon">◈ 3D</span>
+        </button>
+        <button id="mobBtnStats" class="mob-action-btn" onclick="openStatsModal()" title="View Stats & Move Log">
+          📜 LOG
+        </button>
+        <button id="mobBtnGuide" class="mob-action-btn" onclick="openGuideModal()" title="View Detailed Guide">
+          📖 GUIDE
+        </button>
+      </div>
+    </div>
+
+    <!-- ═══ Left Sidebar ═══ -->
+    <aside id="sidebar">
+      <!-- View Mode -->
+      <div class="panel">
+        <div class="panel-title">View Mode</div>
+        <div class="btn-row">
+          <button id="btnView3D" class="btn" onclick="setViewMode('3d')">
+            ◈ 3D SPATIAL
           </button>
-          <button
-            id="mobBtnViewToggle"
-            class="mob-action-btn"
-            onclick="toggleViewModeMobile()"
-            title="Switch 2D / 3D"
-          >
-            <span id="mobBtnViewIcon">◈ 3D</span>
-          </button>
-          <button
-            id="mobBtnStats"
-            class="mob-action-btn"
-            onclick="openStatsModal()"
-            title="View Stats & Move Log"
-          >
-            📜 LOG
-          </button>
-          <button
-            id="mobBtnGuide"
-            class="mob-action-btn"
-            onclick="openGuideModal()"
-            title="View Detailed Guide"
-          >
-            📖 GUIDE
+          <button id="btnView2D" class="btn active" onclick="setViewMode('2d')">
+            ▦ 2D PLANES
           </button>
         </div>
       </div>
 
-      <!-- ═══ Left Sidebar ═══ -->
-      <aside id="sidebar">
-        <!-- View Mode -->
-        <div class="panel">
-          <div class="panel-title">View Mode</div>
+      <!-- Game Mode -->
+      <div class="panel" id="panelGameMode">
+        <div class="panel-title">Game Modes</div>
+        <!-- Primary Game Modes: 2P and 3P -->
+        <div class="btn-row">
+          <button id="btnMode2P" class="btn active" onclick="setPrimaryMode('2p')" title="2-Player Matrix Match">
+            ⚔ 2P
+          </button>
+          <button id="btnMode3P" class="btn" onclick="setPrimaryMode('3p')" title="3-Player Tri-Color Match">
+            ▲ 3P
+          </button>
+        </div>
+
+        <!-- 2P Submenu -->
+        <div id="submenu2P" class="mode-submenu" style="display: block; margin-top: 10px">
+          <div class="control-label" style="margin-bottom: 6px">2P Mode</div>
           <div class="btn-row">
-            <button id="btnView3D" class="btn" onclick="setViewMode('3d')">
-              ◈ 3D SPATIAL
+            <button id="btn2pHuman" class="btn" onclick="set2PMode('human')" title="2 Players (Local Pass & Play)">
+              vs HUMAN
             </button>
-            <button
-              id="btnView2D"
-              class="btn active"
-              onclick="setViewMode('2d')"
-            >
-              ▦ 2D PLANES
+            <button id="btn2pAI" class="btn active" onclick="set2PMode('ai')" title="Solo Match vs AI">
+              vs AI
             </button>
           </div>
         </div>
 
-        <!-- Game Mode -->
-        <div class="panel" id="panelGameMode">
-          <div class="panel-title">Game Modes</div>
-          <!-- Primary Game Modes: 2P and 3P -->
+        <!-- 3P Submenu -->
+        <div id="submenu3P" class="mode-submenu" style="display: none; margin-top: 10px">
+          <div class="control-label" style="margin-bottom: 6px">3P Mode</div>
+          <div class="btn-col">
+            <button id="btn3pHumans" class="btn active" onclick="set3PMode('0')" title="3 Human Players">
+              3 HUMANS
+            </button>
+            <button id="btn3p1Bot" class="btn" onclick="set3PMode('1')" title="2 Humans + 1 AI Bot">
+              2 HUMANS & 1 BOT
+            </button>
+            <button id="btn3p2Bots" class="btn" onclick="set3PMode('2')"
+              title="1 Human + 2 AI Bots (Human and 3AI mode)">
+              1 HUMAN & 2 BOTS
+            </button>
+          </div>
+        </div>
+
+        <!-- Multiplayer Mode -->
+        <div id="humanPlaySetup" class="mode-submenu" style="display: none; margin-top: 10px">
+          <div class="control-label" style="margin-bottom: 6px">
+            Multiplayer Mode
+          </div>
           <div class="btn-row">
-            <button
-              id="btnMode2P"
-              class="btn active"
-              onclick="setPrimaryMode('2p')"
-              title="2-Player Matrix Match"
-            >
-              ⚔ 2P
+            <button id="btnPassAndPlay" class="btn active" onclick="setHumanPlaySetup('pass')"
+              title="Players take turns on this screen">
+              OFFLINE
             </button>
-            <button
-              id="btnMode3P"
-              class="btn"
-              onclick="setPrimaryMode('3p')"
-              title="3-Player Tri-Color Match"
-            >
-              ▲ 3P
+            <button id="btnRemotePlay" class="btn" onclick="setHumanPlaySetup('remote')"
+              title="Players join from separate screens">
+              ONLINE
             </button>
           </div>
-
-          <!-- 2P Submenu -->
-          <div
-            id="submenu2P"
-            class="mode-submenu"
-            style="display: block; margin-top: 10px"
-          >
-            <div class="control-label" style="margin-bottom: 6px">2P Mode</div>
-            <div class="btn-row">
-              <button
-                id="btn2pHuman"
-                class="btn"
-                onclick="set2PMode('human')"
-                title="2 Players (Local Pass & Play)"
-              >
-                vs HUMAN
-              </button>
-              <button
-                id="btn2pAI"
-                class="btn active"
-                onclick="set2PMode('ai')"
-                title="Solo Match vs AI"
-              >
-                vs AI
-              </button>
-            </div>
-          </div>
-
-          <!-- 3P Submenu -->
-          <div
-            id="submenu3P"
-            class="mode-submenu"
-            style="display: none; margin-top: 10px"
-          >
-            <div class="control-label" style="margin-bottom: 6px">3P Mode</div>
-            <div class="btn-col">
-              <button
-                id="btn3pHumans"
-                class="btn active"
-                onclick="set3PMode('0')"
-                title="3 Human Players"
-              >
-                3 HUMANS
-              </button>
-              <button
-                id="btn3p1Bot"
-                class="btn"
-                onclick="set3PMode('1')"
-                title="2 Humans + 1 AI Bot"
-              >
-                2 HUMANS & 1 BOT
-              </button>
-              <button
-                id="btn3p2Bots"
-                class="btn"
-                onclick="set3PMode('2')"
-                title="1 Human + 2 AI Bots (Human and 3AI mode)"
-              >
-                1 HUMAN & 2 BOTS
-              </button>
-            </div>
-          </div>
-
-          <!-- Multiplayer Mode -->
-          <div
-            id="humanPlaySetup"
-            class="mode-submenu"
-            style="display: none; margin-top: 10px"
-          >
+          <div id="remoteRoomOptions" class="mode-submenu" style="display: none; margin-top: 10px">
             <div class="control-label" style="margin-bottom: 6px">
-              Multiplayer Mode
+              Online Match
             </div>
             <div class="btn-row">
-              <button
-                id="btnPassAndPlay"
-                class="btn active"
-                onclick="setHumanPlaySetup('pass')"
-                title="Players take turns on this screen"
-              >
-                PASS &amp; PLAY
+              <button id="btnCreateRoom" class="btn" onclick="setRemoteRoomAction('create')"
+                title="Start a new online match">
+                CREATE ROOM
               </button>
-              <button
-                id="btnRemotePlay"
-                class="btn"
-                onclick="setHumanPlaySetup('remote')"
-                title="Players join from separate screens"
-              >
-                REMOTE PLAY
+              <button id="btnJoinRoom" class="btn" onclick="setRemoteRoomAction('join')" title="Join an online match">
+                JOIN ROOM
               </button>
             </div>
-            <div
-              id="remoteRoomOptions"
-              class="mode-submenu"
-              style="display: none; margin-top: 10px"
-            >
-              <div class="control-label" style="margin-bottom: 6px">
-                Online Match
-              </div>
-              <div class="btn-row">
-                <button
-                  id="btnCreateRoom"
-                  class="btn"
-                  onclick="setRemoteRoomAction('create')"
-                  title="Start a new online match"
-                >
-                  CREATE ROOM
-                </button>
-                <button
-                  id="btnJoinRoom"
-                  class="btn"
-                  onclick="setRemoteRoomAction('join')"
-                  title="Join an online match"
-                >
-                  JOIN ROOM
-                </button>
-              </div>
-              <div
-                id="remoteRoomControls"
-                style="display: none; margin-top: 8px"
-              >
-                <label class="control-label" for="remotePlayerName">
-                  Your Name
+            <div id="remoteRoomControls" style="display: none; margin-top: 8px">
+              <label class="control-label" for="remotePlayerName">
+                Your Name
+              </label>
+              <input id="remotePlayerName" class="remote-play-input" type="text" maxlength="20" autocomplete="nickname"
+                placeholder="Enter your name" value="Player" />
+              <div id="joinRoomControls" style="display: none; margin-top: 8px">
+                <label class="control-label" for="joinRoomCode">
+                  Room Code
                 </label>
-                <input
-                  id="remotePlayerName"
-                  class="remote-play-input"
-                  type="text"
-                  maxlength="20"
-                  autocomplete="nickname"
-                  placeholder="Enter your name"
-                  value="Player"
-                />
-                <div
-                  id="joinRoomControls"
-                  style="display: none; margin-top: 8px"
-                >
-                  <label class="control-label" for="joinRoomCode">
-                    Room Code
-                  </label>
-                  <input
-                    id="joinRoomCode"
-                    class="remote-play-input"
-                    type="text"
-                    maxlength="20"
-                    autocomplete="off"
-                    autocapitalize="characters"
-                    placeholder="Enter room code"
-                  />
-                  <button
-                    id="confirmJoinRoom"
-                    class="btn"
-                    type="button"
-                    style="width: 100%; margin-top: 6px"
-                    onclick="joinRemoteRoom()"
-                  >
-                    JOIN MATCH
+                <input id="joinRoomCode" class="remote-play-input" type="text" maxlength="20" autocomplete="off"
+                  autocapitalize="characters" placeholder="Enter room code" />
+                <button id="confirmJoinRoom" class="btn" type="button" style="width: 100%; margin-top: 6px"
+                  onclick="joinRemoteRoom()">
+                  JOIN MATCH
+                </button>
+              </div>
+              <div id="createdRoomInfo" style="display: none; margin-top: 8px">
+                <div class="control-label">Share this room code</div>
+                <div class="remote-room-code-row">
+                  <strong id="remoteRoomCode"></strong>
+                  <button id="copyRoomCode" class="btn" type="button" onclick="copyRemoteRoomCode()">
+                    COPY
                   </button>
                 </div>
-                <div
-                  id="createdRoomInfo"
-                  style="display: none; margin-top: 8px"
-                >
-                  <div class="control-label">Share this room code</div>
-                  <div class="remote-room-code-row">
-                    <strong id="remoteRoomCode"></strong>
-                    <button
-                      id="copyRoomCode"
-                      class="btn"
-                      type="button"
-                      onclick="copyRemoteRoomCode()"
-                    >
-                      COPY
-                    </button>
-                  </div>
-                </div>
-                <div
-                  id="remoteRoomStatus"
-                  class="remote-room-status"
-                  role="status"
-                  aria-live="polite"
-                ></div>
-                <div id="remotePlayersSection" style="display: none">
-                  <div class="control-label">Players</div>
-                  <ul id="remotePlayers" class="remote-player-list"></ul>
-                </div>
-                <button
-                  id="leaveRemoteRoom"
-                  class="btn"
-                  type="button"
-                  style="display: none; width: 100%; margin-top: 8px"
-                  onclick="leaveRemoteRoom()"
-                >
-                  LEAVE ROOM
-                </button>
               </div>
-            </div>
-          </div>
-
-          <!-- AI Difficulty Submenu -->
-          <div
-            id="aiSettings"
-            class="mode-submenu"
-            style="display: block; margin-top: 10px"
-          >
-            <div class="control-label" style="margin-bottom: 6px">
-              AI Difficulty
-            </div>
-            <div class="btn-row">
-              <button id="btnEasy" class="btn" onclick="setDifficulty('easy')">
-                EASY
-              </button>
-              <button
-                id="btnMed"
-                class="btn active"
-                onclick="setDifficulty('medium')"
-              >
-                MEDIUM
-              </button>
-              <button id="btnHard" class="btn" onclick="setDifficulty('hard')">
-                HARD
+              <div id="remoteRoomStatus" class="remote-room-status" role="status" aria-live="polite"></div>
+              <div id="remotePlayersSection" style="display: none">
+                <div class="control-label">Players</div>
+                <ul id="remotePlayers" class="remote-player-list"></ul>
+              </div>
+              <button id="leaveRemoteRoom" class="btn" type="button" style="display: none; width: 100%; margin-top: 8px"
+                onclick="leaveRemoteRoom()">
+                LEAVE ROOM
               </button>
             </div>
           </div>
         </div>
 
-        <!-- 3D Controls -->
-        <div class="panel" id="panel3DControls">
-          <div class="panel-title">3D Controls</div>
-          <div class="control-group">
-            <div class="control-label">Explode Layers</div>
-            <div class="slider-container">
-              <input
-                type="range"
-                id="explodeSlider"
-                min="0"
-                max="100"
-                value="30"
-                oninput="setExplode(this.value)"
-              />
-            </div>
-          </div>
-          <div class="separator"></div>
+        <!-- AI Difficulty Submenu -->
+        <div id="aiSettings" class="mode-submenu" style="display: block; margin-top: 10px">
           <div class="control-label" style="margin-bottom: 6px">
-            Camera Presets
+            AI Difficulty
           </div>
           <div class="btn-row">
-            <button class="btn" onclick="setCameraPreset('front')">
-              FRONT
+            <button id="btnEasy" class="btn" onclick="setDifficulty('easy')">
+              EASY
             </button>
-            <button class="btn" onclick="setCameraPreset('top')">TOP</button>
-            <button class="btn" onclick="setCameraPreset('iso')">ISO</button>
-          </div>
-          <div class="separator"></div>
-          <div class="control-label" style="margin-bottom: 6px">
-            Isolate Layer
-          </div>
-          <div class="btn-row">
-            <button id="btnL0" class="btn" onclick="isolateLayer(0)">L1</button>
-            <button id="btnL1" class="btn" onclick="isolateLayer(1)">L2</button>
-            <button id="btnL2" class="btn" onclick="isolateLayer(2)">L3</button>
-            <button id="btnLAll" class="btn active" onclick="isolateLayer(-1)">
-              ALL
+            <button id="btnMed" class="btn active" onclick="setDifficulty('medium')">
+              MEDIUM
             </button>
-          </div>
-        </div>
-
-        <!-- Game Guide Option -->
-        <div class="panel" id="panelGameGuide">
-          <div class="panel-title">Game Guide</div>
-          <button
-            id="btnOpenGuide"
-            class="btn btn-guide-trigger"
-            onclick="openGuideModal()"
-            title="Open Complete 3D Field Guide"
-          >
-            <span class="guide-trigger-icon">📖</span>
-            <span class="guide-trigger-text">VIEW FULL GUIDE</span>
-          </button>
-          <p class="guide-quick-desc">
-            Complete manual with rules, 49 winning lines, camera presets, AI
-            difficulty, and tactics.
-          </p>
-        </div>
-      </aside>
-
-      <!-- ═══ Viewport ═══ -->
-      <main id="viewport">
-        <div id="viewModeBadge" class="view-mode-badge">3D SPATIAL</div>
-        <canvas id="three-canvas"></canvas>
-        <div id="flat-view">
-          <!-- Dynamically generated with layer switcher and planes -->
-        </div>
-
-        <!-- Floating 3D Mobile Dock -->
-        <div id="mobile3DDock" class="mobile-3d-dock">
-          <div class="dock-group">
-            <button class="dock-btn" onclick="setCameraPreset('front')">
-              FRONT
+            <button id="btnHard" class="btn" onclick="setDifficulty('hard')">
+              HARD
             </button>
-            <button class="dock-btn" onclick="setCameraPreset('top')">
-              TOP
-            </button>
-            <button class="dock-btn" onclick="setCameraPreset('iso')">
-              ISO
-            </button>
-          </div>
-          <div class="dock-divider"></div>
-          <div class="dock-group">
-            <button
-              class="dock-btn dock-layer-btn active"
-              id="mobLAll"
-              onclick="isolateLayer(-1)"
-            >
-              ALL
-            </button>
-            <button
-              class="dock-btn dock-layer-btn"
-              id="mobL0"
-              onclick="isolateLayer(0)"
-            >
-              L1
-            </button>
-            <button
-              class="dock-btn dock-layer-btn"
-              id="mobL1"
-              onclick="isolateLayer(1)"
-            >
-              L2
-            </button>
-            <button
-              class="dock-btn dock-layer-btn"
-              id="mobL2"
-              onclick="isolateLayer(2)"
-            >
-              L3
-            </button>
-          </div>
-        </div>
-      </main>
-
-      <!-- ═══ Right Info Bar ═══ -->
-      <aside id="infobar">
-        <div class="panel">
-          <div class="panel-title">Scoreboard</div>
-          <div class="score-display">
-            <div class="score-card x-score" id="scoreCardX">
-              <div class="label">✕</div>
-              <div class="value" id="scoreX">0</div>
-            </div>
-            <div class="score-card o-score" id="scoreCardO">
-              <div class="label">◯</div>
-              <div class="value" id="scoreO">0</div>
-            </div>
-            <div
-              class="score-card tri-score"
-              id="scoreCardTri"
-              style="display: none"
-            >
-              <div class="label">△</div>
-              <div class="value" id="scoreTri">0</div>
-            </div>
-            <div class="score-card draw-score" id="scoreCardDraw">
-              <div class="label">DRAW</div>
-              <div class="value" id="scoreDraw">0</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="panel">
-          <div class="panel-title">Move Log</div>
-          <div class="move-counter">
-            <span>Total Moves</span>
-            <span class="count" id="moveCount">0 / 27</span>
-          </div>
-          <div style="height: 8px"></div>
-          <div class="history-log" id="historyLog">
-            <!-- Dynamically populated -->
-          </div>
-        </div>
-
-        <div class="panel">
-          <div class="panel-title">Win Lines (49)</div>
-          <div class="lines-checklist" id="linesChecklist">
-            <!-- Dynamically populated -->
-          </div>
-        </div>
-      </aside>
-    </div>
-
-    <!-- ═══ Semantic Game Details, Instructions & Rules for Search Indexing ═══ -->
-    <section
-      class="game-seo-section"
-      aria-label="Game Instructions, Controls, and Rules"
-    >
-      <h1>The Fringe Cube</h1>
-      <p>
-        Play The Fringe Cube directly in your browser. Solve puzzles, test your
-        reflexes, and experience interactive web gameplay online for free.
-      </p>
-
-      <article class="seo-section-block">
-        <h2>Game Instructions & Controls</h2>
-        <p>
-          Navigate the 3D spatial hypergrid using intuitive mouse or touch
-          controls:
-        </p>
-        <ul>
-          <li>
-            <strong>Mouse Controls:</strong> Left-click on any empty cell to
-            place your mark. Click and drag in open space to rotate the 3D cube.
-            Use the mouse scroll wheel to zoom in and out.
-          </li>
-          <li>
-            <strong>Touch Controls:</strong> Tap empty cells to place moves.
-            Drag to rotate the 3D cube and pinch to zoom on touch devices.
-          </li>
-          <li>
-            <strong>View Switching:</strong> Toggle between the fully 3D
-            rotatable cube (3D Spatial) and flattened layer slices (2D Planes)
-            for tactical planning.
-          </li>
-          <li>
-            <strong>Layer Isolation:</strong> Use layer isolation buttons (L1,
-            L2, L3, All) and the explode slider to inspect interior cells.
-          </li>
-        </ul>
-      </article>
-
-      <article class="seo-section-block">
-        <h2>Gameplay Rules & Win Conditions</h2>
-        <p>
-          The Fringe Cube expands classic tic-tac-toe into a 3×3×3
-          three-dimensional matrix with 27 cells across three horizontal layers
-          (Bottom, Middle, Top).
-        </p>
-        <ul>
-          <li>Players take turns placing their marker (✕, ◯, or △).</li>
-          <li>
-            There are <strong>49 possible winning lines</strong>: 27 axial
-            rows/columns across the X, Y, and Z axes, 18 layer diagonals, and 4
-            cross-cube space diagonals.
-          </li>
-          <li>
-            The first player to align 3 consecutive marks along any of the 49
-            vectors wins the game.
-          </li>
-          <li>
-            Play against tactical computer AI (Easy, Medium, or Hard), enjoy
-            local 2-Player matches, or engage in 3-Player multi-battles.
-          </li>
-        </ul>
-      </article>
-    </section>
-
-    <!-- ═══ Mobile Stats & History Modal ═══ -->
-    <div id="statsModal" class="stats-modal" onclick="onStatsModalClick(event)">
-      <div class="stats-modal-dialog">
-        <div class="stats-modal-header">
-          <div class="stats-modal-title">GAME TELEMETRY</div>
-          <button
-            class="stats-modal-close"
-            onclick="closeStatsModal()"
-            title="Close"
-          >
-            ✕
-          </button>
-        </div>
-        <div class="stats-modal-tabs">
-          <button
-            id="modalTabMoves"
-            class="stats-tab-btn active"
-            onclick="switchModalTab('moves')"
-          >
-            MOVE LOG (<span id="modalMoveCount">0/27</span>)
-          </button>
-          <button
-            id="modalTabLines"
-            class="stats-tab-btn"
-            onclick="switchModalTab('lines')"
-          >
-            WIN LINES (49)
-          </button>
-        </div>
-        <div class="stats-modal-body">
-          <div id="modalMoveLogView" class="modal-tab-content active">
-            <div class="history-log" id="modalHistoryLog"></div>
-          </div>
-          <div id="modalLinesView" class="modal-tab-content">
-            <div class="lines-checklist" id="modalLinesChecklist"></div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- ═══ Full Detailed Guide Modal ═══ -->
-    <div
-      id="guideModal"
-      class="guide-modal"
-      onclick="onGuideModalClick(event)"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="guideModalTitle"
-    >
-      <div class="guide-modal-dialog" id="guideModalDialog">
-        <div class="guide-modal-header">
-          <div class="guide-header-title-wrap">
-            <span class="guide-header-badge"
-              >TACTICAL MANUAL // 3×3×3 MATRIX</span
-            >
-            <h2 class="guide-modal-title" id="guideModalTitle">
-              3D TIC-TAC-TOE FIELD GUIDE
-            </h2>
-            <div class="guide-header-sub">
-              Complete Rules, 49 Winning Lines, Spatial Controls & Winning
-              Strategies
+      <!-- 3D Controls -->
+      <div class="panel" id="panel3DControls">
+        <div class="panel-title">3D Controls</div>
+        <div class="control-group">
+          <div class="control-label">Explode Layers</div>
+          <div class="slider-container">
+            <input type="range" id="explodeSlider" min="0" max="100" value="30" oninput="setExplode(this.value)" />
+          </div>
+        </div>
+        <div class="separator"></div>
+        <div class="control-label" style="margin-bottom: 6px">
+          Camera Presets
+        </div>
+        <div class="btn-row">
+          <button class="btn" onclick="setCameraPreset('front')">
+            FRONT
+          </button>
+          <button class="btn" onclick="setCameraPreset('top')">TOP</button>
+          <button class="btn" onclick="setCameraPreset('iso')">ISO</button>
+        </div>
+        <div class="separator"></div>
+        <div class="control-label" style="margin-bottom: 6px">
+          Isolate Layer
+        </div>
+        <div class="btn-row">
+          <button id="btnL0" class="btn" onclick="isolateLayer(0)">L1</button>
+          <button id="btnL1" class="btn" onclick="isolateLayer(1)">L2</button>
+          <button id="btnL2" class="btn" onclick="isolateLayer(2)">L3</button>
+          <button id="btnLAll" class="btn active" onclick="isolateLayer(-1)">
+            ALL
+          </button>
+        </div>
+      </div>
+
+      <!-- Game Guide Option -->
+      <div class="panel" id="panelGameGuide">
+        <div class="panel-title">Game Guide</div>
+        <button id="btnOpenGuide" class="btn btn-guide-trigger" onclick="openGuideModal()"
+          title="Open Complete 3D Field Guide">
+          <span class="guide-trigger-icon">📖</span>
+          <span class="guide-trigger-text">VIEW FULL GUIDE</span>
+        </button>
+        <p class="guide-quick-desc">
+          Complete manual with rules, 49 winning lines, camera presets, AI
+          difficulty, and tactics.
+        </p>
+      </div>
+    </aside>
+
+    <!-- ═══ Viewport ═══ -->
+    <main id="viewport">
+      <div id="viewModeBadge" class="view-mode-badge">3D SPATIAL</div>
+      <canvas id="three-canvas"></canvas>
+      <div id="flat-view">
+        <!-- Dynamically generated with layer switcher and planes -->
+      </div>
+
+      <!-- Floating 3D Mobile Dock -->
+      <div id="mobile3DDock" class="mobile-3d-dock">
+        <div class="dock-group">
+          <button class="dock-btn" onclick="setCameraPreset('front')">
+            FRONT
+          </button>
+          <button class="dock-btn" onclick="setCameraPreset('top')">
+            TOP
+          </button>
+          <button class="dock-btn" onclick="setCameraPreset('iso')">
+            ISO
+          </button>
+        </div>
+        <div class="dock-divider"></div>
+        <div class="dock-group">
+          <button class="dock-btn dock-layer-btn active" id="mobLAll" onclick="isolateLayer(-1)">
+            ALL
+          </button>
+          <button class="dock-btn dock-layer-btn" id="mobL0" onclick="isolateLayer(0)">
+            L1
+          </button>
+          <button class="dock-btn dock-layer-btn" id="mobL1" onclick="isolateLayer(1)">
+            L2
+          </button>
+          <button class="dock-btn dock-layer-btn" id="mobL2" onclick="isolateLayer(2)">
+            L3
+          </button>
+        </div>
+      </div>
+
+      <!-- Floating Bottom Multiplayer Button / Logo -->
+      <button id="btnBottomMultiplayer" class="bottom-multiplayer-btn" onclick="openRemotePlayMenu()"
+        title="Online Multiplayer (Remote Play)" aria-label="Open Online Multiplayer Menu">
+        <span class="multiplayer-btn-icon">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+        </span>
+        <span class="multiplayer-btn-text">PLAY ONLINE</span>
+        <span id="multiplayerStatusDot" class="multiplayer-status-dot"></span>
+      </button>
+
+      <!-- Remote Mode Warning Toast -->
+      <div id="gameWarningToast" class="game-warning-toast" role="alert" aria-live="assertive"></div>
+    </main>
+
+    <!-- ═══ Right Info Bar ═══ -->
+    <aside id="infobar">
+      <div class="panel">
+        <div class="panel-title">Scoreboard</div>
+        <div class="score-display">
+          <div class="score-card x-score" id="scoreCardX">
+            <div class="label">✕</div>
+            <div class="value" id="scoreX">0</div>
+          </div>
+          <div class="score-card o-score" id="scoreCardO">
+            <div class="label">◯</div>
+            <div class="value" id="scoreO">0</div>
+          </div>
+          <div class="score-card tri-score" id="scoreCardTri" style="display: none">
+            <div class="label">△</div>
+            <div class="value" id="scoreTri">0</div>
+          </div>
+          <div class="score-card draw-score" id="scoreCardDraw">
+            <div class="label">DRAW</div>
+            <div class="value" id="scoreDraw">0</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">Move Log</div>
+        <div class="move-counter">
+          <span>Total Moves</span>
+          <span class="count" id="moveCount">0 / 27</span>
+        </div>
+        <div style="height: 8px"></div>
+        <div class="history-log" id="historyLog">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">Win Lines (49)</div>
+        <div class="lines-checklist" id="linesChecklist">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- ═══ Semantic Game Details, Instructions & Rules for Search Indexing ═══ -->
+  <section class="game-seo-section" aria-label="Game Instructions, Controls, and Rules">
+    <h1>The Fringe Cube</h1>
+    <p>
+      Play The Fringe Cube directly in your browser. Solve puzzles, test your
+      reflexes, and experience interactive web gameplay online for free.
+    </p>
+
+    <article class="seo-section-block">
+      <h2>Game Instructions & Controls</h2>
+      <p>
+        Navigate the 3D spatial hypergrid using intuitive mouse or touch
+        controls:
+      </p>
+      <ul>
+        <li>
+          <strong>Mouse Controls:</strong> Left-click on any empty cell to
+          place your mark. Click and drag in open space to rotate the 3D cube.
+          Use the mouse scroll wheel to zoom in and out.
+        </li>
+        <li>
+          <strong>Touch Controls:</strong> Tap empty cells to place moves.
+          Drag to rotate the 3D cube and pinch to zoom on touch devices.
+        </li>
+        <li>
+          <strong>View Switching:</strong> Toggle between the fully 3D
+          rotatable cube (3D Spatial) and flattened layer slices (2D Planes)
+          for tactical planning.
+        </li>
+        <li>
+          <strong>Layer Isolation:</strong> Use layer isolation buttons (L1,
+          L2, L3, All) and the explode slider to inspect interior cells.
+        </li>
+      </ul>
+    </article>
+
+    <article class="seo-section-block">
+      <h2>Gameplay Rules & Win Conditions</h2>
+      <p>
+        The Fringe Cube expands classic tic-tac-toe into a 3×3×3
+        three-dimensional matrix with 27 cells across three horizontal layers
+        (Bottom, Middle, Top).
+      </p>
+      <ul>
+        <li>Players take turns placing their marker (✕, ◯, or △).</li>
+        <li>
+          There are <strong>49 possible winning lines</strong>: 27 axial
+          rows/columns across the X, Y, and Z axes, 18 layer diagonals, and 4
+          cross-cube space diagonals.
+        </li>
+        <li>
+          The first player to align 3 consecutive marks along any of the 49
+          vectors wins the game.
+        </li>
+        <li>
+          Play against tactical computer AI (Easy, Medium, or Hard), enjoy
+          local 2-Player matches, or engage in 3-Player multi-battles.
+        </li>
+      </ul>
+    </article>
+  </section>
+
+  <!-- ═══ Mobile Stats & History Modal ═══ -->
+  <div id="statsModal" class="stats-modal" onclick="onStatsModalClick(event)">
+    <div class="stats-modal-dialog">
+      <div class="stats-modal-header">
+        <div class="stats-modal-title">GAME TELEMETRY</div>
+        <button class="stats-modal-close" onclick="closeStatsModal()" title="Close">
+          ✕
+        </button>
+      </div>
+      <div class="stats-modal-tabs">
+        <button id="modalTabMoves" class="stats-tab-btn active" onclick="switchModalTab('moves')">
+          MOVE LOG (<span id="modalMoveCount">0/27</span>)
+        </button>
+        <button id="modalTabLines" class="stats-tab-btn" onclick="switchModalTab('lines')">
+          WIN LINES (49)
+        </button>
+      </div>
+      <div class="stats-modal-body">
+        <div id="modalMoveLogView" class="modal-tab-content active">
+          <div class="history-log" id="modalHistoryLog"></div>
+        </div>
+        <div id="modalLinesView" class="modal-tab-content">
+          <div class="lines-checklist" id="modalLinesChecklist"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ Full Detailed Guide Modal ═══ -->
+  <div id="guideModal" class="guide-modal" onclick="onGuideModalClick(event)" role="dialog" aria-modal="true"
+    aria-labelledby="guideModalTitle">
+    <div class="guide-modal-dialog" id="guideModalDialog">
+      <div class="guide-modal-header">
+        <div class="guide-header-title-wrap">
+          <span class="guide-header-badge">TACTICAL MANUAL // 3×3×3 MATRIX</span>
+          <h2 class="guide-modal-title" id="guideModalTitle">
+            3D TIC-TAC-TOE FIELD GUIDE
+          </h2>
+          <div class="guide-header-sub">
+            Complete Rules, 49 Winning Lines, Spatial Controls & Winning
+            Strategies
+          </div>
+        </div>
+        <button class="guide-modal-close" onclick="closeGuideModal()" title="Close Guide (Esc)"
+          aria-label="Close Guide">
+          ✕
+        </button>
+      </div>
+
+      <!-- Guide Tabs -->
+      <div class="guide-modal-tabs">
+        <button id="tabGuideOverview" class="guide-tab-btn active" onclick="switchGuideTab('overview')">
+          <span>📖</span> OVERVIEW & RULES
+        </button>
+        <button id="tabGuideLines" class="guide-tab-btn" onclick="switchGuideTab('lines')">
+          <span>📐</span> 49 WIN LINES
+        </button>
+        <button id="tabGuideModes" class="guide-tab-btn" onclick="switchGuideTab('modes')">
+          <span>🎮</span> GAME MODES & AI
+        </button>
+        <button id="tabGuideControls" class="guide-tab-btn" onclick="switchGuideTab('controls')">
+          <span>🕹️</span> 3D CONTROLS
+        </button>
+        <button id="tabGuideTactics" class="guide-tab-btn" onclick="switchGuideTab('tactics')">
+          <span>⚡</span> WINNING TACTICS
+        </button>
+      </div>
+
+      <!-- Guide Body -->
+      <div class="guide-modal-body" id="guideModalBody">
+        <!-- Tab 1: Overview & Rules -->
+        <div id="guideTabContent-overview" class="guide-tab-content active">
+          <div class="guide-section-box">
+            <div class="guide-section-title">
+              <span>◈</span> What is The Fringe Cube?
+            </div>
+            <p>
+              <strong>The Fringe Cube</strong> is a spatial evolution of the
+              ancient game of Tic-Tac-Toe. Instead of playing on a flat 3×3
+              square with 9 cells, the battlefield expands into a full
+              <strong>3×3×3 matrix</strong> composed of
+              <strong>27 distinct cells</strong> across 3 vertical layers:
+            </p>
+            <div class="guide-cards-grid" style="margin-top: 12px">
+              <div class="guide-card">
+                <div class="guide-card-head">
+                  <span style="color: var(--cyan)">LAYER 1 (L1)</span>
+                  <span class="guide-tag cyan">BOTTOM</span>
+                </div>
+                <div class="guide-card-desc">
+                  Cells 0 through 8. The foundational ground plane of the
+                  matrix.
+                </div>
+              </div>
+              <div class="guide-card">
+                <div class="guide-card-head">
+                  <span style="color: var(--pink)">LAYER 2 (L2)</span>
+                  <span class="guide-tag pink">EQUATOR / CORE</span>
+                </div>
+                <div class="guide-card-desc">
+                  Cells 9 through 17. Contains cell #13, the absolute
+                  gravitational center of the cube.
+                </div>
+              </div>
+              <div class="guide-card">
+                <div class="guide-card-head">
+                  <span style="color: var(--tri)">LAYER 3 (L3)</span>
+                  <span class="guide-tag tri">TOP SKY</span>
+                </div>
+                <div class="guide-card-desc">
+                  Cells 18 through 26. The upper celestial layer overlooking
+                  the matrix.
+                </div>
+              </div>
             </div>
           </div>
-          <button
-            class="guide-modal-close"
-            onclick="closeGuideModal()"
-            title="Close Guide (Esc)"
-            aria-label="Close Guide"
-          >
-            ✕
-          </button>
-        </div>
 
-        <!-- Guide Tabs -->
-        <div class="guide-modal-tabs">
-          <button
-            id="tabGuideOverview"
-            class="guide-tab-btn active"
-            onclick="switchGuideTab('overview')"
-          >
-            <span>📖</span> OVERVIEW & RULES
-          </button>
-          <button
-            id="tabGuideLines"
-            class="guide-tab-btn"
-            onclick="switchGuideTab('lines')"
-          >
-            <span>📐</span> 49 WIN LINES
-          </button>
-          <button
-            id="tabGuideModes"
-            class="guide-tab-btn"
-            onclick="switchGuideTab('modes')"
-          >
-            <span>🎮</span> GAME MODES & AI
-          </button>
-          <button
-            id="tabGuideControls"
-            class="guide-tab-btn"
-            onclick="switchGuideTab('controls')"
-          >
-            <span>🕹️</span> 3D CONTROLS
-          </button>
-          <button
-            id="tabGuideTactics"
-            class="guide-tab-btn"
-            onclick="switchGuideTab('tactics')"
-          >
-            <span>⚡</span> WINNING TACTICS
-          </button>
-        </div>
-
-        <!-- Guide Body -->
-        <div class="guide-modal-body" id="guideModalBody">
-          <!-- Tab 1: Overview & Rules -->
-          <div id="guideTabContent-overview" class="guide-tab-content active">
-            <div class="guide-section-box">
-              <div class="guide-section-title">
-                <span>◈</span> What is The Fringe Cube?
-              </div>
-              <p>
-                <strong>The Fringe Cube</strong> is a spatial evolution of the
-                ancient game of Tic-Tac-Toe. Instead of playing on a flat 3×3
-                square with 9 cells, the battlefield expands into a full
-                <strong>3×3×3 matrix</strong> composed of
-                <strong>27 distinct cells</strong> across 3 vertical layers:
-              </p>
-              <div class="guide-cards-grid" style="margin-top: 12px">
-                <div class="guide-card">
-                  <div class="guide-card-head">
-                    <span style="color: var(--cyan)">LAYER 1 (L1)</span>
-                    <span class="guide-tag cyan">BOTTOM</span>
-                  </div>
-                  <div class="guide-card-desc">
-                    Cells 0 through 8. The foundational ground plane of the
-                    matrix.
-                  </div>
-                </div>
-                <div class="guide-card">
-                  <div class="guide-card-head">
-                    <span style="color: var(--pink)">LAYER 2 (L2)</span>
-                    <span class="guide-tag pink">EQUATOR / CORE</span>
-                  </div>
-                  <div class="guide-card-desc">
-                    Cells 9 through 17. Contains cell #13, the absolute
-                    gravitational center of the cube.
-                  </div>
-                </div>
-                <div class="guide-card">
-                  <div class="guide-card-head">
-                    <span style="color: var(--tri)">LAYER 3 (L3)</span>
-                    <span class="guide-tag tri">TOP SKY</span>
-                  </div>
-                  <div class="guide-card-desc">
-                    Cells 18 through 26. The upper celestial layer overlooking
-                    the matrix.
-                  </div>
-                </div>
-              </div>
+          <div class="guide-section-box">
+            <div class="guide-section-title">
+              <span>⚖</span> Core Objective & Turn Flow
             </div>
-
-            <div class="guide-section-box">
-              <div class="guide-section-title">
-                <span>⚖</span> Core Objective & Turn Flow
-              </div>
-              <ul
-                style="
+            <ul style="
                   padding-left: 18px;
                   display: flex;
                   flex-direction: column;
                   gap: 8px;
-                "
-              >
-                <li>
-                  <strong>The Win Condition:</strong> Be the first player to
-                  align
-                  <strong
-                    >3 identical marks in a straight continuous line</strong
-                  >
-                  in 3D space.
-                </li>
-                <li>
-                  <strong>Turn Order:</strong> Players take turns placing their
-                  unique symbol into any empty cell.
-                </li>
-                <li>
-                  <strong>Player ✕ (Cyan):</strong> Always moves first (Round
-                  opener).
-                </li>
-                <li>
-                  <strong>Player ◯ (Pink):</strong> Moves second (In vs AI,
-                  played by the computer).
-                </li>
-                <li>
-                  <strong>Player △ (Neon Green):</strong> Moves third when
-                  playing in 3-Player (3P) game modes.
-                </li>
-                <li>
-                  <strong>Stalemate / Draw:</strong> If all 27 cells are
-                  occupied without any 3-in-a-row alignment, the game ends in a
-                  draw.
-                </li>
-              </ul>
-            </div>
+                ">
+              <li>
+                <strong>The Win Condition:</strong> Be the first player to
+                align
+                <strong>3 identical marks in a straight continuous line</strong>
+                in 3D space.
+              </li>
+              <li>
+                <strong>Turn Order:</strong> Players take turns placing their
+                unique symbol into any empty cell.
+              </li>
+              <li>
+                <strong>Player ✕ (Cyan):</strong> Always moves first (Round
+                opener).
+              </li>
+              <li>
+                <strong>Player ◯ (Pink):</strong> Moves second (In vs AI,
+                played by the computer).
+              </li>
+              <li>
+                <strong>Player △ (Neon Green):</strong> Moves third when
+                playing in 3-Player (3P) game modes.
+              </li>
+              <li>
+                <strong>Stalemate / Draw:</strong> If all 27 cells are
+                occupied without any 3-in-a-row alignment, the game ends in a
+                draw.
+              </li>
+            </ul>
           </div>
+        </div>
 
-          <!-- Tab 2: 49 Winning Lines -->
-          <div id="guideTabContent-lines" class="guide-tab-content">
-            <div class="guide-section-box">
-              <div class="guide-section-title">
-                <span>📐</span> The Geometry of 49 Winning Lines
+        <!-- Tab 2: 49 Winning Lines -->
+        <div id="guideTabContent-lines" class="guide-tab-content">
+          <div class="guide-section-box">
+            <div class="guide-section-title">
+              <span>📐</span> The Geometry of 49 Winning Lines
+            </div>
+            <p>
+              In standard 2D tic-tac-toe, there are only 8 winning lines. In
+              3D space, the combination of 3 orthogonal axes and spatial
+              diagonals yields exactly
+              <strong>49 unique winning lines</strong>:
+            </p>
+
+            <div class="guide-cards-grid" style="margin-top: 12px">
+              <div class="guide-card">
+                <div class="guide-card-head">
+                  <span>27 ORTHOGONAL LINES</span>
+                  <span class="guide-tag cyan">1D AXIAL</span>
+                </div>
+                <div class="guide-card-desc">
+                  <strong>• 9 Rows (X-axis):</strong> 3 horizontal rows across
+                  each of the 3 layers.<br />
+                  <strong>• 9 Columns (Z-axis):</strong> 3 depth columns
+                  across each layer.<br />
+                  <strong>• 9 Pillars (Y-axis):</strong> 9 vertical elevators
+                  connecting identical (X, Z) positions straight up through L1
+                  → L2 → L3.
+                </div>
               </div>
-              <p>
-                In standard 2D tic-tac-toe, there are only 8 winning lines. In
-                3D space, the combination of 3 orthogonal axes and spatial
-                diagonals yields exactly
-                <strong>49 unique winning lines</strong>:
-              </p>
-
-              <div class="guide-cards-grid" style="margin-top: 12px">
-                <div class="guide-card">
-                  <div class="guide-card-head">
-                    <span>27 ORTHOGONAL LINES</span>
-                    <span class="guide-tag cyan">1D AXIAL</span>
-                  </div>
-                  <div class="guide-card-desc">
-                    <strong>• 9 Rows (X-axis):</strong> 3 horizontal rows across
-                    each of the 3 layers.<br />
-                    <strong>• 9 Columns (Z-axis):</strong> 3 depth columns
-                    across each layer.<br />
-                    <strong>• 9 Pillars (Y-axis):</strong> 9 vertical elevators
-                    connecting identical (X, Z) positions straight up through L1
-                    → L2 → L3.
-                  </div>
+              <div class="guide-card">
+                <div class="guide-card-head">
+                  <span>18 PLANAR DIAGONALS</span>
+                  <span class="guide-tag pink">2D SLICES</span>
                 </div>
-                <div class="guide-card">
-                  <div class="guide-card-head">
-                    <span>18 PLANAR DIAGONALS</span>
-                    <span class="guide-tag pink">2D SLICES</span>
-                  </div>
-                  <div class="guide-card-desc">
-                    <strong>• 6 Horizontal Diagonals:</strong> 2 classic
-                    diagonal X-crosses inside each horizontal plane (L1, L2,
-                    L3).<br />
-                    <strong>• 6 Vertical Front-to-Back:</strong> 2 diagonals on
-                    each vertical slice (X=0, 1, 2).<br />
-                    <strong>• 6 Vertical Left-to-Right:</strong> 2 diagonals on
-                    each cross slice (Z=0, 1, 2).
-                  </div>
+                <div class="guide-card-desc">
+                  <strong>• 6 Horizontal Diagonals:</strong> 2 classic
+                  diagonal X-crosses inside each horizontal plane (L1, L2,
+                  L3).<br />
+                  <strong>• 6 Vertical Front-to-Back:</strong> 2 diagonals on
+                  each vertical slice (X=0, 1, 2).<br />
+                  <strong>• 6 Vertical Left-to-Right:</strong> 2 diagonals on
+                  each cross slice (Z=0, 1, 2).
                 </div>
-                <div class="guide-card" style="grid-column: 1 / -1">
-                  <div class="guide-card-head">
-                    <span>4 TRUE SPACE DIAGONALS</span>
-                    <span class="guide-tag gold">3D HYPER-CROSS</span>
-                  </div>
-                  <div class="guide-card-desc">
-                    The four most lethal vectors in the game! They connect
-                    opposite corners of the 3D cube and all pass directly
-                    through the absolute center cell (1, 1, 1):<br />
-                    <code class="guide-code-box">
+              </div>
+              <div class="guide-card" style="grid-column: 1 / -1">
+                <div class="guide-card-head">
+                  <span>4 TRUE SPACE DIAGONALS</span>
+                  <span class="guide-tag gold">3D HYPER-CROSS</span>
+                </div>
+                <div class="guide-card-desc">
+                  The four most lethal vectors in the game! They connect
+                  opposite corners of the 3D cube and all pass directly
+                  through the absolute center cell (1, 1, 1):<br />
+                  <code class="guide-code-box">
                       1. Bottom-Front-Left [0,0,0] → Center [1,1,1] →
                       Top-Back-Right [2,2,2]<br />
                       2. Bottom-Front-Right [2,0,0] → Center [1,1,1] →
@@ -936,392 +687,357 @@
                       4. Bottom-Back-Right [2,0,2] → Center [1,1,1] →
                       Top-Front-Left [0,2,0]
                     </code>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="guide-section-box">
-              <div class="guide-section-title">
-                <span>👁</span> Live Vector Telemetry
-              </div>
-              <p>
-                Open the <strong>LOG</strong> button in the top/mobile bar to
-                view the interactive checklist of all 49 win lines. The
-                telemetry actively highlights active lines, blocked lines, and
-                completed vectors in real-time as moves occur!
-              </p>
-            </div>
-          </div>
-
-          <!-- Tab 3: Game Modes & AI -->
-          <div id="guideTabContent-modes" class="guide-tab-content">
-            <div class="guide-section-box">
-              <div class="guide-section-title">
-                <span>⚔</span> 2-Player (2P) Game Modes
-              </div>
-              <div class="guide-cards-grid">
-                <div class="guide-card">
-                  <div class="guide-card-head">
-                    <span>vs HUMAN</span>
-                    <span class="guide-tag cyan">LOCAL PVP</span>
-                  </div>
-                  <div class="guide-card-desc">
-                    Two human players share the screen or pass the device.
-                    Player X battles Player O. Perfect for friendly face-to-face
-                    spatial duels.
-                  </div>
-                </div>
-                <div class="guide-card">
-                  <div class="guide-card-head">
-                    <span>vs AI (DEFAULT)</span>
-                    <span class="guide-tag pink">SOLO VS BOT</span>
-                  </div>
-                  <div class="guide-card-desc">
-                    Play solo as Player X against our tactical computer opponent
-                    controlling Player O. Choose between Easy, Medium, or Hard
-                    difficulty.
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="guide-section-box">
-              <div class="guide-section-title">
-                <span>▲</span> 3-Player (3P) Tri-Color Modes
-              </div>
-              <p>
-                3-Player mode introduces Player △ (Emerald). With three players
-                competing on 27 cells, territorial control is fiercely
-                contested:
-              </p>
-              <div class="guide-cards-grid" style="margin-top: 10px">
-                <div class="guide-card">
-                  <div class="guide-card-head">
-                    <span>3 Humans</span>
-                    <span class="guide-tag cyan">3-WAY PASS & PLAY</span>
-                  </div>
-                  <div class="guide-card-desc">
-                    Three human competitors rotate turns: X (Cyan) → O (Pink) →
-                    △ (Emerald). High unpredictability and diplomatic
-                    mind-games!
-                  </div>
-                </div>
-                <div class="guide-card">
-                  <div class="guide-card-head">
-                    <span>2 Humans & 1Bot</span>
-                    <span class="guide-tag pink">2 HUMANS + 1 BOT</span>
-                  </div>
-                  <div class="guide-card-desc">
-                    Two human friends battle each other while a computer AI bot
-                    (△) acts as a relentless third-party spoiler and contender.
-                  </div>
-                </div>
-                <div class="guide-card">
-                  <div class="guide-card-head">
-                    <span>1 Human and 2 Bots</span>
-                    <span class="guide-tag gold">1 HUMAN VS 2 BOTS</span>
-                  </div>
-                  <div class="guide-card-desc">
-                    Test your true spatial prowess! You play X against two
-                    autonomous AI bots (O and △) competing independently for the
-                    win.
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="guide-section-box">
-              <div class="guide-section-title">
-                <span>🤖</span> AI Difficulty Levels
-              </div>
-              <div class="guide-cards-grid">
-                <div class="guide-card">
-                  <div class="guide-card-head">
-                    <span>EASY</span>
-                    <span class="guide-tag cyan">CASUAL / NOVICE</span>
-                  </div>
-                  <div class="guide-card-desc">
-                    Makes fast and relaxed moves with occasional random choices.
-                    Ideal for newcomers familiarizing themselves with 3D cube
-                    rotations.
-                  </div>
-                </div>
-                <div class="guide-card">
-                  <div class="guide-card-head">
-                    <span>MEDIUM (DEFAULT)</span>
-                    <span class="guide-tag pink">TACTICAL WATCHDOG</span>
-                  </div>
-                  <div class="guide-card-desc">
-                    Alert and opportunistic. Detects immediate winning lines,
-                    consistently blocks opponent threats, and seizes the center
-                    core when available.
-                  </div>
-                </div>
-                <div class="guide-card">
-                  <div class="guide-card-head">
-                    <span>HARD</span>
-                    <span class="guide-tag gold">CYBER CORE ENGINE</span>
-                  </div>
-                  <div class="guide-card-desc">
-                    Advanced spatial evaluation. Heuristically calculates line
-                    weights, fork creation, center dominance, space diagonal
-                    traps, and future threat denial.
-                  </div>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Tab 4: 3D Controls & Views -->
-          <div id="guideTabContent-controls" class="guide-tab-content">
-            <div class="guide-section-box">
-              <div class="guide-section-title">
-                <span>🕹️</span> 3D Spatial Navigation
+          <div class="guide-section-box">
+            <div class="guide-section-title">
+              <span>👁</span> Live Vector Telemetry
+            </div>
+            <p>
+              Open the <strong>LOG</strong> button in the top/mobile bar to
+              view the interactive checklist of all 49 win lines. The
+              telemetry actively highlights active lines, blocked lines, and
+              completed vectors in real-time as moves occur!
+            </p>
+          </div>
+        </div>
+
+        <!-- Tab 3: Game Modes & AI -->
+        <div id="guideTabContent-modes" class="guide-tab-content">
+          <div class="guide-section-box">
+            <div class="guide-section-title">
+              <span>⚔</span> 2-Player (2P) Game Modes
+            </div>
+            <div class="guide-cards-grid">
+              <div class="guide-card">
+                <div class="guide-card-head">
+                  <span>vs HUMAN</span>
+                  <span class="guide-tag cyan">LOCAL PVP</span>
+                </div>
+                <div class="guide-card-desc">
+                  Two human players share the screen or pass the device.
+                  Player X battles Player O. Perfect for friendly face-to-face
+                  spatial duels.
+                </div>
               </div>
-              <ul
-                style="
+              <div class="guide-card">
+                <div class="guide-card-head">
+                  <span>vs AI (DEFAULT)</span>
+                  <span class="guide-tag pink">SOLO VS BOT</span>
+                </div>
+                <div class="guide-card-desc">
+                  Play solo as Player X against our tactical computer opponent
+                  controlling Player O. Choose between Easy, Medium, or Hard
+                  difficulty.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="guide-section-box">
+            <div class="guide-section-title">
+              <span>▲</span> 3-Player (3P) Tri-Color Modes
+            </div>
+            <p>
+              3-Player mode introduces Player △ (Emerald). With three players
+              competing on 27 cells, territorial control is fiercely
+              contested:
+            </p>
+            <div class="guide-cards-grid" style="margin-top: 10px">
+              <div class="guide-card">
+                <div class="guide-card-head">
+                  <span>3 Humans</span>
+                  <span class="guide-tag cyan">3-WAY PASS & PLAY</span>
+                </div>
+                <div class="guide-card-desc">
+                  Three human competitors rotate turns: X (Cyan) → O (Pink) →
+                  △ (Emerald). High unpredictability and diplomatic
+                  mind-games!
+                </div>
+              </div>
+              <div class="guide-card">
+                <div class="guide-card-head">
+                  <span>2 Humans & 1Bot</span>
+                  <span class="guide-tag pink">2 HUMANS + 1 BOT</span>
+                </div>
+                <div class="guide-card-desc">
+                  Two human friends battle each other while a computer AI bot
+                  (△) acts as a relentless third-party spoiler and contender.
+                </div>
+              </div>
+              <div class="guide-card">
+                <div class="guide-card-head">
+                  <span>1 Human and 2 Bots</span>
+                  <span class="guide-tag gold">1 HUMAN VS 2 BOTS</span>
+                </div>
+                <div class="guide-card-desc">
+                  Test your true spatial prowess! You play X against two
+                  autonomous AI bots (O and △) competing independently for the
+                  win.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="guide-section-box">
+            <div class="guide-section-title">
+              <span>🤖</span> AI Difficulty Levels
+            </div>
+            <div class="guide-cards-grid">
+              <div class="guide-card">
+                <div class="guide-card-head">
+                  <span>EASY</span>
+                  <span class="guide-tag cyan">CASUAL / NOVICE</span>
+                </div>
+                <div class="guide-card-desc">
+                  Makes fast and relaxed moves with occasional random choices.
+                  Ideal for newcomers familiarizing themselves with 3D cube
+                  rotations.
+                </div>
+              </div>
+              <div class="guide-card">
+                <div class="guide-card-head">
+                  <span>MEDIUM (DEFAULT)</span>
+                  <span class="guide-tag pink">TACTICAL WATCHDOG</span>
+                </div>
+                <div class="guide-card-desc">
+                  Alert and opportunistic. Detects immediate winning lines,
+                  consistently blocks opponent threats, and seizes the center
+                  core when available.
+                </div>
+              </div>
+              <div class="guide-card">
+                <div class="guide-card-head">
+                  <span>HARD</span>
+                  <span class="guide-tag gold">CYBER CORE ENGINE</span>
+                </div>
+                <div class="guide-card-desc">
+                  Advanced spatial evaluation. Heuristically calculates line
+                  weights, fork creation, center dominance, space diagonal
+                  traps, and future threat denial.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 4: 3D Controls & Views -->
+        <div id="guideTabContent-controls" class="guide-tab-content">
+          <div class="guide-section-box">
+            <div class="guide-section-title">
+              <span>🕹️</span> 3D Spatial Navigation
+            </div>
+            <ul style="
                   padding-left: 18px;
                   display: flex;
                   flex-direction: column;
                   gap: 8px;
-                "
-              >
-                <li>
-                  <strong>Orbit / Rotate:</strong> Left-click and drag (or
-                  1-finger drag on touchscreens) anywhere in open space to
-                  rotate your viewpoint 360° around the cube.
-                </li>
-                <li>
-                  <strong>Zoom:</strong> Scroll the mouse wheel (or
-                  pinch-to-zoom on mobile) to inspect inner cells or gain a
-                  broad tactical overview.
-                </li>
-                <li>
-                  <strong>Pan / Move Camera:</strong> Right-click and drag (or
-                  2-finger swipe on mobile) to translate the camera focus.
-                </li>
-                <li>
-                  <strong>Camera Presets:</strong>
-                  <div
-                    style="
+                ">
+              <li>
+                <strong>Orbit / Rotate:</strong> Left-click and drag (or
+                1-finger drag on touchscreens) anywhere in open space to
+                rotate your viewpoint 360° around the cube.
+              </li>
+              <li>
+                <strong>Zoom:</strong> Scroll the mouse wheel (or
+                pinch-to-zoom on mobile) to inspect inner cells or gain a
+                broad tactical overview.
+              </li>
+              <li>
+                <strong>Pan / Move Camera:</strong> Right-click and drag (or
+                2-finger swipe on mobile) to translate the camera focus.
+              </li>
+              <li>
+                <strong>Camera Presets:</strong>
+                <div style="
                       display: flex;
                       gap: 8px;
                       margin-top: 6px;
                       flex-wrap: wrap;
-                    "
-                  >
-                    <span class="guide-tag cyan"
-                      >FRONT: Orthogonal Face View</span
-                    >
-                    <span class="guide-tag pink"
-                      >TOP: Downward Planar View</span
-                    >
-                    <span class="guide-tag tri"
-                      >ISO: 3D Depth Isometric View</span
-                    >
-                  </div>
-                </li>
-              </ul>
-            </div>
-
-            <div class="guide-section-box">
-              <div class="guide-section-title">
-                <span>💥</span> Explode Layers & Layer Isolation
-              </div>
-              <p>
-                Because internal cells can be occluded by outer cells, The
-                Fringe Cube provides specialized spatial tools:
-              </p>
-              <div class="guide-cards-grid" style="margin-top: 10px">
-                <div class="guide-card">
-                  <div class="guide-card-head">
-                    <span>EXPLODE LAYERS SLIDER</span>
-                    <span class="guide-tag cyan">VERTICAL EXPANSION</span>
-                  </div>
-                  <div class="guide-card-desc">
-                    Slide to increase vertical distance between L1, L2, and L3.
-                    Allows clear sightlines directly into the center core of the
-                    cube.
-                  </div>
+                    ">
+                  <span class="guide-tag cyan">FRONT: Orthogonal Face View</span>
+                  <span class="guide-tag pink">TOP: Downward Planar View</span>
+                  <span class="guide-tag tri">ISO: 3D Depth Isometric View</span>
                 </div>
-                <div class="guide-card">
-                  <div class="guide-card-head">
-                    <span>ISOLATE LAYER (L1, L2, L3, ALL)</span>
-                    <span class="guide-tag pink">FILTER VIEW</span>
-                  </div>
-                  <div class="guide-card-desc">
-                    Isolates a single horizontal plane to examine local 2D
-                    threats without background visual clutter. Select ALL to
-                    restore full cube visibility.
-                  </div>
-                </div>
-                <div class="guide-card" style="grid-column: 1 / -1">
-                  <div class="guide-card-head">
-                    <span>2D PLANES MODE</span>
-                    <span class="guide-tag tri">FLAT PROJECTION</span>
-                  </div>
-                  <div class="guide-card-desc">
-                    Switch from "3D SPATIAL" to "2D PLANES" to unfold the cube
-                    into three parallel 3×3 flat boards. Hovering over any cell
-                    automatically highlights its corresponding vertical pillar
-                    neighbors across all 3 planes!
-                  </div>
-                </div>
-              </div>
-            </div>
+              </li>
+            </ul>
           </div>
 
-          <!-- Tab 5: Pro Tactics & Strategy -->
-          <div id="guideTabContent-tactics" class="guide-tab-content">
-            <div class="guide-section-box">
-              <div class="guide-section-title">
-                <span>⚡</span> Secret 1: The Core Nexus (Cell #13)
-              </div>
-              <p>
-                In standard 2D Tic-Tac-Toe, the center square belongs to 4
-                lines. In 3D Tic-Tac-Toe,
-                <strong
-                  >Cell 13 (Layer 2, Row 2, Col 2) belongs to an astonishing 13
-                  WINNING LINES!</strong
-                >
-              </p>
-              <p style="margin-top: 6px; color: var(--text-dim)">
-                It is part of: 3 Orthogonal Lines (1 pillar, 1 row, 1 col) + 6
-                Planar Diagonals + all 4 Space Diagonals! Controlling the center
-                cell gives you unmatched offensive flexibility and defensive
-                denial.
-              </p>
+          <div class="guide-section-box">
+            <div class="guide-section-title">
+              <span>💥</span> Explode Layers & Layer Isolation
             </div>
-
-            <div class="guide-section-box">
-              <div class="guide-section-title">
-                <span>👑</span> Secret 2: Corner Domination (8 Anchors)
+            <p>
+              Because internal cells can be occluded by outer cells, The
+              Fringe Cube provides specialized spatial tools:
+            </p>
+            <div class="guide-cards-grid" style="margin-top: 10px">
+              <div class="guide-card">
+                <div class="guide-card-head">
+                  <span>EXPLODE LAYERS SLIDER</span>
+                  <span class="guide-tag cyan">VERTICAL EXPANSION</span>
+                </div>
+                <div class="guide-card-desc">
+                  Slide to increase vertical distance between L1, L2, and L3.
+                  Allows clear sightlines directly into the center core of the
+                  cube.
+                </div>
               </div>
-              <p>
-                The 8 corner cells are part of
-                <strong>7 winning lines each</strong> (3 orthogonal lines, 3
-                planar diagonals, and 1 space diagonal). Playing corners early
-                allows you to anchor cross-layer diagonals that opponents
-                frequently overlook.
-              </p>
-            </div>
-
-            <div class="guide-section-box">
-              <div class="guide-section-title">
-                <span>🔱</span> Secret 3: Constructing 3D Forks
+              <div class="guide-card">
+                <div class="guide-card-head">
+                  <span>ISOLATE LAYER (L1, L2, L3, ALL)</span>
+                  <span class="guide-tag pink">FILTER VIEW</span>
+                </div>
+                <div class="guide-card-desc">
+                  Isolates a single horizontal plane to examine local 2D
+                  threats without background visual clutter. Select ALL to
+                  restore full cube visibility.
+                </div>
               </div>
-              <p>
-                A "Fork" occurs when one of your moves creates
-                <strong>two simultaneous 2-in-a-row winning threats</strong> on
-                different vectors. Because your opponent can only block one line
-                on their turn, you are guaranteed victory on your following
-                move. Look for forks that combine a vertical pillar with a
-                planar diagonal!
-              </p>
-            </div>
-
-            <div class="guide-section-box">
-              <div class="guide-section-title">
-                <span>⚠️</span> Secret 4: Beware 3-Player Spoilers
+              <div class="guide-card" style="grid-column: 1 / -1">
+                <div class="guide-card-head">
+                  <span>2D PLANES MODE</span>
+                  <span class="guide-tag tri">FLAT PROJECTION</span>
+                </div>
+                <div class="guide-card-desc">
+                  Switch from "3D SPATIAL" to "2D PLANES" to unfold the cube
+                  into three parallel 3×3 flat boards. Hovering over any cell
+                  automatically highlights its corresponding vertical pillar
+                  neighbors across all 3 planes!
+                </div>
               </div>
-              <p>
-                In 3-Player mode, blind blocking can be fatal. If Player 1 has
-                two marks in a row and Player 2 blocks them, Player 3 might
-                capitalize on an open vector. Always calculate whose turn comes
-                next before placing a non-offensive mark.
-              </p>
             </div>
           </div>
         </div>
 
-        <div class="guide-modal-footer">
-          <button class="btn btn-guide-start" onclick="closeGuideModal()">
-            <span>✓</span>
-            <span>RETURN TO MATRIX</span>
-          </button>
+        <!-- Tab 5: Pro Tactics & Strategy -->
+        <div id="guideTabContent-tactics" class="guide-tab-content">
+          <div class="guide-section-box">
+            <div class="guide-section-title">
+              <span>⚡</span> Secret 1: The Core Nexus (Cell #13)
+            </div>
+            <p>
+              In standard 2D Tic-Tac-Toe, the center square belongs to 4
+              lines. In 3D Tic-Tac-Toe,
+              <strong>Cell 13 (Layer 2, Row 2, Col 2) belongs to an astonishing 13
+                WINNING LINES!</strong>
+            </p>
+            <p style="margin-top: 6px; color: var(--text-dim)">
+              It is part of: 3 Orthogonal Lines (1 pillar, 1 row, 1 col) + 6
+              Planar Diagonals + all 4 Space Diagonals! Controlling the center
+              cell gives you unmatched offensive flexibility and defensive
+              denial.
+            </p>
+          </div>
+
+          <div class="guide-section-box">
+            <div class="guide-section-title">
+              <span>👑</span> Secret 2: Corner Domination (8 Anchors)
+            </div>
+            <p>
+              The 8 corner cells are part of
+              <strong>7 winning lines each</strong> (3 orthogonal lines, 3
+              planar diagonals, and 1 space diagonal). Playing corners early
+              allows you to anchor cross-layer diagonals that opponents
+              frequently overlook.
+            </p>
+          </div>
+
+          <div class="guide-section-box">
+            <div class="guide-section-title">
+              <span>🔱</span> Secret 3: Constructing 3D Forks
+            </div>
+            <p>
+              A "Fork" occurs when one of your moves creates
+              <strong>two simultaneous 2-in-a-row winning threats</strong> on
+              different vectors. Because your opponent can only block one line
+              on their turn, you are guaranteed victory on your following
+              move. Look for forks that combine a vertical pillar with a
+              planar diagonal!
+            </p>
+          </div>
+
+          <div class="guide-section-box">
+            <div class="guide-section-title">
+              <span>⚠️</span> Secret 4: Beware 3-Player Spoilers
+            </div>
+            <p>
+              In 3-Player mode, blind blocking can be fatal. If Player 1 has
+              two marks in a row and Player 2 blocks them, Player 3 might
+              capitalize on an open vector. Always calculate whose turn comes
+              next before placing a non-offensive mark.
+            </p>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- ═══ Match Result / Game Over Modal ═══ -->
-    <div
-      id="gameOverModal"
-      class="game-over-modal"
-      onclick="onGameOverModalClick(event)"
-    >
-      <div class="game-over-dialog" id="gameOverDialog">
-        <div class="game-over-header">
-          <div class="game-over-tag" id="gameOverTag">MATCH TERMINATED</div>
-          <button
-            class="game-over-close-btn"
-            onclick="closeGameOverModal()"
-            title="Close & Analyze Game"
-            aria-label="Close"
-          >
-            ✕
-          </button>
-        </div>
-
-        <div class="game-over-content">
-          <div class="game-over-avatar-wrap">
-            <div class="game-over-avatar" id="gameOverAvatar">✕</div>
-          </div>
-
-          <h2 class="game-over-title" id="gameOverTitle">PLAYER X WINS!</h2>
-          <div class="game-over-subtitle" id="gameOverSubtitle">
-            Three-dimensional alignment confirmed
-          </div>
-
-          <div class="game-over-card-grid">
-            <div class="game-over-stat-card" id="cardGameMode">
-              <span class="stat-card-label">GAME MODE</span>
-              <span class="stat-card-value highlight" id="gameOverMode"
-                >2P vs AI (Medium)</span
-              >
-            </div>
-            <div class="game-over-stat-card" id="cardWinLine">
-              <span class="stat-card-label">WINNING VECTOR</span>
-              <span class="stat-card-value highlight" id="gameOverLine"
-                >X-Row L1 R2</span
-              >
-            </div>
-            <div class="game-over-stat-card">
-              <span class="stat-card-label">TOTAL MOVES</span>
-              <span class="stat-card-value" id="gameOverMoves"
-                >12 / 27 MOVES</span
-              >
-            </div>
-            <div class="game-over-stat-card">
-              <span class="stat-card-label">SESSION SCORE</span>
-              <span class="stat-card-value" id="gameOverScoreTally"
-                >X: 1 · O: 0 · D: 0</span
-              >
-            </div>
-          </div>
-        </div>
-
-        <div class="game-over-footer">
-          <button
-            class="modal-act-btn btn-analyze"
-            onclick="closeGameOverModal()"
-            title="Close popup to analyze board"
-          >
-            <span>👁</span>
-            <span>ANALYZE BOARD</span>
-          </button>
-          <button
-            class="modal-act-btn btn-replay"
-            onclick="resetGameFromModal()"
-            title="Reset and play a new match"
-          >
-            <span>⟲</span>
-            <span>PLAY AGAIN</span>
-          </button>
-        </div>
+      <div class="guide-modal-footer">
+        <button class="btn btn-guide-start" onclick="closeGuideModal()">
+          <span>✓</span>
+          <span>RETURN TO MATRIX</span>
+        </button>
       </div>
     </div>
+  </div>
 
-    <script type="module" src="./main.js"></script>
-  </body>
+  <!-- ═══ Match Result / Game Over Modal ═══ -->
+  <div id="gameOverModal" class="game-over-modal" onclick="onGameOverModalClick(event)">
+    <div class="game-over-dialog" id="gameOverDialog">
+      <div class="game-over-header">
+        <div class="game-over-tag" id="gameOverTag">MATCH TERMINATED</div>
+        <button class="game-over-close-btn" onclick="closeGameOverModal()" title="Close & Analyze Game"
+          aria-label="Close">
+          ✕
+        </button>
+      </div>
+
+      <div class="game-over-content">
+        <div class="game-over-avatar-wrap">
+          <div class="game-over-avatar" id="gameOverAvatar">✕</div>
+        </div>
+
+        <h2 class="game-over-title" id="gameOverTitle">PLAYER X WINS!</h2>
+        <div class="game-over-subtitle" id="gameOverSubtitle">
+          Three-dimensional alignment confirmed
+        </div>
+
+        <div class="game-over-card-grid">
+          <div class="game-over-stat-card" id="cardGameMode">
+            <span class="stat-card-label">GAME MODE</span>
+            <span class="stat-card-value highlight" id="gameOverMode">2P vs AI (Medium)</span>
+          </div>
+          <div class="game-over-stat-card" id="cardWinLine">
+            <span class="stat-card-label">WINNING VECTOR</span>
+            <span class="stat-card-value highlight" id="gameOverLine">X-Row L1 R2</span>
+          </div>
+          <div class="game-over-stat-card">
+            <span class="stat-card-label">TOTAL MOVES</span>
+            <span class="stat-card-value" id="gameOverMoves">12 / 27 MOVES</span>
+          </div>
+          <div class="game-over-stat-card">
+            <span class="stat-card-label">SESSION SCORE</span>
+            <span class="stat-card-value" id="gameOverScoreTally">X: 1 · O: 0 · D: 0</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="game-over-footer">
+        <button class="modal-act-btn btn-analyze" onclick="closeGameOverModal()" title="Close popup to analyze board">
+          <span>👁</span>
+          <span>ANALYZE BOARD</span>
+        </button>
+        <button class="modal-act-btn btn-replay" onclick="resetGameFromModal()" title="Reset and play a new match">
+          <span>⟲</span>
+          <span>PLAY AGAIN</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="./main.js"></script>
+</body>
+
 </html>

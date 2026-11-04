@@ -12,13 +12,36 @@ state.makeMove = function makeMove(cellIndex, { fromNetwork = false } = {}) {
     !fromNetwork &&
     ((state.humanPlaySetup === 'remote' && supportsRemotePlay) || state.network)
   ) {
-    if (
-      !state.network ||
-      !state.remoteReadyToPlay ||
-      (state.currentPlayer !== state.localPlayerSymbol &&
-        !(state.remoteIsHost && state.isCurrentPlayerBot()))
-    )
+    if (!state.network) {
+      state.showWarning?.('Cannot play: Create or join an online room first!');
       return;
+    }
+    const disconnectedPlayer = state.remotePlayers.find(
+      (p) => !p.connected && p.symbol !== null,
+    );
+    if (disconnectedPlayer) {
+      state.showWarning?.(
+        `Cannot play: ${disconnectedPlayer.name} left the match!`,
+      );
+      return;
+    }
+    if (!state.remoteReadyToPlay) {
+      const connectedCount = state.remotePlayers.filter(
+        (p) => p.connected,
+      ).length;
+      const expected = state.remoteExpectedPlayers || 2;
+      state.showWarning?.(
+        `Cannot play: Waiting for all players to join (${connectedCount}/${expected})!`,
+      );
+      return;
+    }
+    if (
+      state.currentPlayer !== state.localPlayerSymbol &&
+      !(state.remoteIsHost && state.isCurrentPlayerBot())
+    ) {
+      state.showWarning?.("It is not your turn! Waiting for opponent's move.");
+      return;
+    }
   }
 
   state.board[cellIndex] = state.currentPlayer;

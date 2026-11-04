@@ -2478,3 +2478,204 @@
         font-size: 11.5px;
       }
     }
+
+    /* ═══════════════════════════════════════════════════════════════
+       Bottom Multiplayer Button & Warning Toast
+       ═══════════════════════════════════════════════════════════════ */
+
+    /* ── Bottom Multiplayer Floating Button / Logo ── */
+    .bottom-multiplayer-btn {
+      position: absolute;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 18px;
+      background: rgba(10, 15, 28, 0.88);
+      border: 1px solid var(--border-glow);
+      border-radius: 24px;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      color: var(--cyan);
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      cursor: pointer;
+      z-index: 25;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 6px 25px rgba(0, 0, 0, 0.7), 0 0 14px var(--cyan-dim);
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      white-space: nowrap;
+    }
+
+    .bottom-multiplayer-btn:hover {
+      background: rgba(14, 22, 42, 0.95);
+      border-color: var(--cyan);
+      color: #ffffff;
+      transform: translateX(-50%) translateY(-2px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.8), 0 0 22px var(--cyan-glow);
+    }
+
+    .bottom-multiplayer-btn:active {
+      transform: translateX(-50%) scale(0.96);
+    }
+
+    .multiplayer-btn-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+    }
+
+    .multiplayer-btn-icon svg {
+      display: block;
+    }
+
+    .multiplayer-status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--text-dim);
+      display: inline-block;
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .multiplayer-status-dot.waiting {
+      background: #ffaa00;
+      box-shadow: 0 0 8px #ffaa00;
+      animation: pulse-dot 1.5s infinite;
+    }
+
+    .multiplayer-status-dot.live {
+      background: var(--tri);
+      box-shadow: 0 0 10px var(--tri);
+      animation: pulse-dot 1.5s infinite;
+    }
+
+    .multiplayer-status-dot.connecting {
+      background: var(--cyan);
+      box-shadow: 0 0 8px var(--cyan);
+      animation: pulse-dot 0.8s infinite;
+    }
+
+    @keyframes pulse-dot {
+      0% { transform: scale(0.9); opacity: 0.7; }
+      50% { transform: scale(1.2); opacity: 1; }
+      100% { transform: scale(0.9); opacity: 0.7; }
+    }
+
+    @keyframes highlight-glow {
+      0% { box-shadow: 0 0 0 rgba(0, 240, 255, 0); }
+      50% { box-shadow: 0 0 24px var(--cyan-glow); border-color: var(--cyan); }
+      100% { box-shadow: 0 0 0 rgba(0, 240, 255, 0); }
+    }
+
+    .highlight-pulse {
+      animation: highlight-glow 1.4s ease-out;
+    }
+
+    /* ── Remote / Game Warning Toast ── */
+    .game-warning-toast {
+      position: absolute;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-24px);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 18px;
+      border-radius: 20px;
+      font-family: var(--font-display);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      z-index: 150;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.8);
+      max-width: 90vw;
+      text-align: center;
+      white-space: normal;
+    }
+
+    .game-warning-toast.visible {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .game-warning-toast.warning {
+      background: rgba(22, 14, 5, 0.94);
+      border: 1px solid #ffaa00;
+      color: #ffc83b;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.8), 0 0 16px rgba(255, 170, 0, 0.35);
+    }
+
+    .game-warning-toast.warning .warning-icon {
+      color: #ffaa00;
+      font-size: 14px;
+    }
+
+    .game-warning-toast.success {
+      background: rgba(5, 22, 14, 0.94);
+      border: 1px solid var(--tri);
+      color: #a3ffcd;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.8), 0 0 16px var(--tri-dim);
+    }
+
+    .game-warning-toast.success .warning-icon {
+      color: var(--tri);
+      font-size: 14px;
+    }
+
+    .game-warning-toast.info {
+      background: rgba(6, 18, 30, 0.94);
+      border: 1px solid var(--cyan);
+      color: #a3f3ff;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.8), 0 0 16px var(--cyan-dim);
+    }
+
+    .game-warning-toast.info .warning-icon {
+      color: var(--cyan);
+      font-size: 14px;
+    }
+
+    @media (max-width: 1100px) {
+      .view-mode-badge {
+        top: 10px;
+        right: 10px;
+        left: auto;
+      }
+
+      .bottom-multiplayer-btn {
+        top: 10px;
+        left: 10px;
+        bottom: auto;
+        transform: none;
+        padding: 5px 11px;
+        font-size: 9.5px;
+        letter-spacing: 0.8px;
+        gap: 6px;
+      }
+
+      .bottom-multiplayer-btn:hover {
+        transform: translateY(-2px);
+      }
+
+      .bottom-multiplayer-btn:active {
+        transform: scale(0.95);
+      }
+
+      .game-warning-toast {
+        top: 46px;
+        font-size: 11px;
+        padding: 7px 14px;
+      }
+    }

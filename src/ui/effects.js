@@ -19,6 +19,32 @@ state.createParticles = function createParticles() {
     else p.style.background = '#00ff88';
     container.appendChild(p);
   }
-}
+};
+
+// Remote Mode / Game Warning Toast
+// ═══════════════════════════════════════════════════════════════
+
+state.showWarning = function showWarning(message, type = 'warning') {
+  let toast = document.getElementById('gameWarningToast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'gameWarningToast';
+    toast.className = 'game-warning-toast';
+    document.getElementById('viewport')?.appendChild(toast);
+  }
+
+  const icon = type === 'success' ? '✓' : type === 'info' ? 'ℹ' : '⚠';
+  toast.className = `game-warning-toast ${type} visible`;
+  toast.innerHTML = `<span class="warning-icon">${icon}</span><span class="warning-text">${message}</span>`;
+
+  if (state.warningTimer) clearTimeout(state.warningTimer);
+  state.warningTimer = setTimeout(() => {
+    toast.classList.remove('visible');
+  }, 3500);
+
+  if (type === 'warning' && state.audioEnabled) {
+    state.playSound?.('warning');
+  }
+};
 
 // ═══════════════════════════════════════════════════════════════

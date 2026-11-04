@@ -53,4 +53,5 @@ export const state = {
   animFrame: undefined,
   audioCtx: undefined,
   lastGameResult: null,
+  warningTimer: null,
 };

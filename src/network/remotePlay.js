@@ -120,6 +120,21 @@ function symbolName(symbol) {
   return '…';
 }
 
+function updateMultiplayerStatusDot() {
+  const dot = document.getElementById('multiplayerStatusDot');
+  if (!dot) return;
+  if (!state.network) {
+    dot.className = 'multiplayer-status-dot';
+  } else if (state.remoteConnecting) {
+    dot.className = 'multiplayer-status-dot connecting';
+  } else if (state.remoteReadyToPlay) {
+    dot.className = 'multiplayer-status-dot live';
+  } else {
+    dot.className = 'multiplayer-status-dot waiting';
+  }
+}
+state.updateMultiplayerStatusDot = updateMultiplayerStatusDot;
+
 function updateConnectionStatus() {
   const connectedPlayers = state.remotePlayers.filter(
     (player) => player.connected,
@@ -130,6 +145,7 @@ function updateConnectionStatus() {
       .filter((player) => player.connected)
       .map((player) => player.symbol),
   );
+  const wasReady = state.remoteReadyToPlay;
   state.remoteReadyToPlay =
     state.remoteGameStateReady &&
     requiredSymbols.every((symbol) => connectedSymbols.has(symbol)) &&
@@ -139,12 +155,16 @@ function updateConnectionStatus() {
     const turn =
       state.currentPlayer === state.localPlayerSymbol ? 'Your turn.' : 'Opponent turn.';
     setRoomStatus(`All players connected. ${turn}`);
+    if (!wasReady) {
+      state.showWarning?.('All players joined! Ready to play.', 'success');
+    }
   } else {
     setRoomStatus(
       `Waiting for players (${connectedPlayers}/${state.remoteExpectedPlayers})…`,
     );
   }
   updateRoomDisplay();
+  updateMultiplayerStatusDot();
 }
 state.updateRemoteConnectionStatus = updateConnectionStatus;
 
@@ -448,6 +468,7 @@ function startRemoteNetwork(action, roomCode = '') {
   state.remoteConnecting = true;
   setRoomStatus('Connecting to Poki Netlib…');
   updateRoomDisplay();
+  updateMultiplayerStatusDot();
 
   network.on('ready', async () => {
     if (session !== state.networkSession) {
@@ -538,6 +559,7 @@ function startRemoteNetwork(action, roomCode = '') {
     state.resetGame({ broadcast: false });
     setRoomStatus('The room was closed.');
     updateRoomDisplay();
+    state.showWarning?.('The room was closed.', 'info');
   });
 
   network.on('disconnected', (peer) => {
@@ -547,10 +569,14 @@ function startRemoteNetwork(action, roomCode = '') {
       state.resetGame({ broadcast: false });
       setRoomStatus('The host disconnected. The room is no longer available.');
       updateRoomDisplay();
+      state.showWarning?.('The host disconnected. The room is no longer available.');
       return;
     }
     const player = state.remotePlayers.find((entry) => entry.id === peer.id);
-    if (player) player.connected = false;
+    if (player) {
+      player.connected = false;
+      state.showWarning?.(`${player.name} left the match!`);
+    }
     if (state.remoteIsHost) broadcastRoster();
     updateConnectionStatus();
   });
@@ -558,7 +584,10 @@ function startRemoteNetwork(action, roomCode = '') {
   network.on('reconnected', (peer) => {
     if (session !== state.networkSession) return;
     const player = state.remotePlayers.find((entry) => entry.id === peer.id);
-    if (player) player.connected = true;
+    if (player) {
+      player.connected = true;
+      state.showWarning?.(`${player.name} reconnected!`, 'success');
+    }
     if (state.remoteIsHost) broadcastRoster();
     updateConnectionStatus();
   });
@@ -665,4 +694,5 @@ state.closeRemotePlay = function closeRemotePlay() {
   if (code) code.value = '';
   setRoomStatus('');
   updateRoomDisplay();
+  updateMultiplayerStatusDot();
 };

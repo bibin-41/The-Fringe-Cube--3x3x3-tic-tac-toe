@@ -116,6 +116,21 @@ state.playSound = function playSound(type) {
       osc.start(now);
       osc.stop(now + 0.5);
     }
+
+    if (type === 'warning') {
+      // Gentle cyber warning buzz
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.frequency.setValueAtTime(320, now);
+      osc.frequency.exponentialRampToValueAtTime(220, now + 0.15);
+      osc.type = 'sawtooth';
+      gain.gain.setValueAtTime(0.08, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+      osc.start(now);
+      osc.stop(now + 0.2);
+    }
   } catch (e) {
     // Audio context may not be available
   }

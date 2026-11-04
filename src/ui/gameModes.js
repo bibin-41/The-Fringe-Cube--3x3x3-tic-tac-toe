@@ -162,6 +162,34 @@ state.setHumanPlaySetup = function setHumanPlaySetup(setup) {
   state.updateHumanPlaySetupVisibility();
 };
 
+state.openRemotePlayMenu = function openRemotePlayMenu() {
+  const sidebar = document.getElementById('sidebar');
+  if (sidebar && !sidebar.classList.contains('open') && window.innerWidth <= 1100) {
+    state.toggleSidebar();
+  }
+  if (state.primaryMode === '3p') {
+    if (state.botMode3P === '2') {
+      state.set3PMode('0');
+    }
+  } else {
+    state.setPrimaryMode('2p');
+    state.set2PMode('human');
+  }
+  state.setHumanPlaySetup('remote');
+
+  const remoteOptions = document.getElementById('remoteRoomOptions');
+  const setupSection = document.getElementById('humanPlaySetup');
+  const target = remoteOptions || setupSection;
+  if (target) {
+    setTimeout(() => {
+      target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      target.classList.remove('highlight-pulse');
+      void target.offsetWidth;
+      target.classList.add('highlight-pulse');
+    }, 150);
+  }
+};
+
 state.setRemoteRoomAction = function setRemoteRoomAction(action) {
   if (state.network && state.remoteRoomAction !== action) {
     state.closeRemotePlay();

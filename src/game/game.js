@@ -3,11 +3,26 @@ import { state } from '../state.js';
 // Game Logic
 // ═══════════════════════════════════════════════════════════════
 
-state.makeMove = function makeMove(cellIndex) {
+state.makeMove = function makeMove(cellIndex, { fromNetwork = false } = {}) {
   if (state.board[cellIndex] !== state.EMPTY || state.gameOver) return;
+  if (
+    state.network &&
+    !fromNetwork &&
+    (!state.remoteReadyToPlay ||
+      (state.currentPlayer !== state.localPlayerSymbol &&
+        !(state.remoteIsHost && state.isCurrentPlayerBot())))
+  ) return;
 
   state.board[cellIndex] = state.currentPlayer;
   state.moveHistory.push({ player: state.currentPlayer, cell: cellIndex });
+  if (state.network && !fromNetwork) {
+    state.broadcastRemoteMessage({
+      type: 'move',
+      cell: cellIndex,
+      player: state.currentPlayer,
+      sequence: state.moveHistory.length,
+    });
+  }
 
   state.playSound(
     state.currentPlayer === state.X
@@ -83,9 +98,14 @@ state.makeMove = function makeMove(cellIndex) {
   }
   state.updateTurnDisplay();
   state.updateMoveLog();
+  state.updateRemoteConnectionStatus?.();
 
   // AI move
-  if (state.isCurrentPlayerBot() && !state.gameOver) {
+  if (
+    state.isCurrentPlayerBot() &&
+    !state.gameOver &&
+    (!state.network || state.remoteIsHost)
+  ) {
     setTimeout(() => {
       const aiMove = state.getAIMove();
       if (aiMove !== -1) state.makeMove(aiMove);
@@ -93,7 +113,10 @@ state.makeMove = function makeMove(cellIndex) {
   }
 };
 
-state.resetGame = function resetGame() {
+state.resetGame = function resetGame({ broadcast = true } = {}) {
+  if (state.network && broadcast) {
+    state.broadcastRemoteMessage({ type: 'reset' });
+  }
   state.board = new Array(27).fill(state.EMPTY);
   state.currentPlayer = state.X;
   state.gameOver = false;

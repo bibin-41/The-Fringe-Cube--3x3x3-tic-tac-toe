@@ -10,6 +10,7 @@ import './ui/scoreboard.js';
 import './ui/modals.js';
 import './ui/audio.js';
 import './ui/effects.js';
+import './network/remotePlay.js';
 
 // Initialization
 // ═══════════════════════════════════════════════════════════════
@@ -54,7 +55,10 @@ const inlineHandlers = [
   'closeGameOverModal',
   'closeGuideModal',
   'closeStatsModal',
+  'copyRemoteRoomCode',
   'isolateLayer',
+  'joinRemoteRoom',
+  'leaveRemoteRoom',
   'onGameOverModalClick',
   'onGuideModalClick',
   'onStatsModalClick',

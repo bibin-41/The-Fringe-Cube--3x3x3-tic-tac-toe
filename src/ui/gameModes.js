@@ -43,6 +43,7 @@ state.toggleViewModeMobile = function toggleViewModeMobile() {
 };
 
 state.setPrimaryMode = function setPrimaryMode(mode) {
+  state.closeRemotePlay();
   state.primaryMode = mode;
   const b2p = document.getElementById('btnMode2P');
   const b3p = document.getElementById('btnMode3P');
@@ -75,6 +76,7 @@ state.setPrimaryMode = function setPrimaryMode(mode) {
 };
 
 state.set2PMode = function set2PMode(type) {
+  state.closeRemotePlay();
   state.mode2P = type; // 'human' or 'ai'
   state.gameMode = type === 'ai' ? 'ai' : 'pvp';
   const bHuman = document.getElementById('btn2pHuman');
@@ -87,6 +89,7 @@ state.set2PMode = function set2PMode(type) {
 };
 
 state.set3PMode = function set3PMode(val) {
+  state.closeRemotePlay();
   state.botMode3P = val; // '0': 3 Humans, '1': 2 Humans & 1Bot, '2': 1 Human and 2 Bots
   state.gameMode = '3p';
   const b0 = document.getElementById('btn3pHumans');
@@ -136,13 +139,27 @@ state.updateHumanPlaySetupVisibility =
   };
 
 state.setHumanPlaySetup = function setHumanPlaySetup(setup) {
+  const changed = state.humanPlaySetup !== setup;
+  if (setup === 'pass') state.closeRemotePlay();
   state.humanPlaySetup = setup;
+  if (changed) state.resetGame({ broadcast: false });
   state.updateHumanPlaySetupVisibility();
 };
 
 state.setRemoteRoomAction = function setRemoteRoomAction(action) {
+  if (state.network) {
+    state.closeRemotePlay();
+    state.resetGame({ broadcast: false });
+  }
   state.remoteRoomAction = action;
+  const controls = document.getElementById('remoteRoomControls');
+  const joinControls = document.getElementById('joinRoomControls');
+  const createdRoomInfo = document.getElementById('createdRoomInfo');
+  if (controls) controls.style.display = 'block';
+  if (joinControls) joinControls.style.display = action === 'join' ? 'block' : 'none';
+  if (createdRoomInfo) createdRoomInfo.style.display = 'none';
   state.updateHumanPlaySetupVisibility();
+  if (action === 'create') state.createRemoteRoom();
 };
 
 state.updateAISettingsVisibility = function updateAISettingsVisibility() {

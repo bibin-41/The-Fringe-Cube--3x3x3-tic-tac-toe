@@ -329,6 +329,85 @@
                   JOIN ROOM
                 </button>
               </div>
+              <div
+                id="remoteRoomControls"
+                style="display: none; margin-top: 8px"
+              >
+                <label class="control-label" for="remotePlayerName">
+                  Your Name
+                </label>
+                <input
+                  id="remotePlayerName"
+                  class="remote-play-input"
+                  type="text"
+                  maxlength="20"
+                  autocomplete="nickname"
+                  placeholder="Enter your name"
+                  value="Player"
+                />
+                <div
+                  id="joinRoomControls"
+                  style="display: none; margin-top: 8px"
+                >
+                  <label class="control-label" for="joinRoomCode">
+                    Room Code
+                  </label>
+                  <input
+                    id="joinRoomCode"
+                    class="remote-play-input"
+                    type="text"
+                    maxlength="12"
+                    autocomplete="off"
+                    autocapitalize="characters"
+                    placeholder="Enter room code"
+                  />
+                  <button
+                    id="confirmJoinRoom"
+                    class="btn"
+                    type="button"
+                    style="width: 100%; margin-top: 6px"
+                    onclick="joinRemoteRoom()"
+                  >
+                    JOIN MATCH
+                  </button>
+                </div>
+                <div
+                  id="createdRoomInfo"
+                  style="display: none; margin-top: 8px"
+                >
+                  <div class="control-label">Share this room code</div>
+                  <div class="remote-room-code-row">
+                    <strong id="remoteRoomCode"></strong>
+                    <button
+                      id="copyRoomCode"
+                      class="btn"
+                      type="button"
+                      onclick="copyRemoteRoomCode()"
+                    >
+                      COPY
+                    </button>
+                  </div>
+                </div>
+                <div
+                  id="remoteRoomStatus"
+                  class="remote-room-status"
+                  role="status"
+                  aria-live="polite"
+                ></div>
+                <div id="remotePlayersSection" style="display: none">
+                  <div class="control-label">Players</div>
+                  <ul id="remotePlayers" class="remote-player-list"></ul>
+                </div>
+                <button
+                  id="leaveRemoteRoom"
+                  class="btn"
+                  type="button"
+                  style="display: none; width: 100%; margin-top: 8px"
+                  onclick="leaveRemoteRoom()"
+                >
+                  LEAVE ROOM
+                </button>
+              </div>
             </div>
           </div>
 
@@ -414,7 +493,7 @@
           </button>
           <p class="guide-quick-desc">
             Complete manual with rules, 49 winning lines, camera presets, AI
-            difficulty, and pro tactics.
+            difficulty, and tactics.
           </p>
         </div>
       </aside>

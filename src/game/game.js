@@ -1,0 +1,123 @@
+import { state } from '../state.js';
+
+// Game Logic
+// ═══════════════════════════════════════════════════════════════
+
+state.makeMove = function makeMove(cellIndex) {
+  if (state.board[cellIndex] !== state.EMPTY || state.gameOver) return;
+
+  state.board[cellIndex] = state.currentPlayer;
+  state.moveHistory.push({ player: state.currentPlayer, cell: cellIndex });
+
+  state.playSound(
+    state.currentPlayer === state.X
+      ? 'moveX'
+      : state.currentPlayer === state.O
+        ? 'moveO'
+        : 'moveTri',
+  );
+
+  // Update 3D
+  state.placeGlyph3D(cellIndex);
+  state.updateCellHighlights();
+  state.updateGhostPreview();
+
+  // Update 2D
+  state.updateFlatView();
+
+  // Check win
+  const result = state.checkWin(state.board);
+  if (result) {
+    state.gameOver = true;
+    state.winLine = result.line;
+    const winner = result.winner;
+
+    // Update score
+    if (winner === state.X) state.scores.x++;
+    else if (winner === state.O) state.scores.o++;
+    else if (winner === state.TRIANGLE) state.scores.tri++;
+    state.updateScoreboard();
+
+    // Win visuals
+    state.drawWinLine3D(result.line);
+    state.updateCellHighlights();
+    state.updateFlatView();
+    state.updateStatusDisplay();
+    state.updateLinesChecklist();
+    state.playSound('win');
+
+    setTimeout(() => {
+      state.showGameOverModal({
+        isDraw: false,
+        winner: winner,
+        winLine: result.line,
+        lineIndex: result.lineIndex,
+      });
+    }, 600);
+    return;
+  }
+
+  if (state.isBoardFull(state.board)) {
+    state.gameOver = true;
+    state.scores.draw++;
+    state.updateScoreboard();
+    state.updateStatusDisplay();
+    state.playSound('draw');
+
+    setTimeout(() => {
+      state.showGameOverModal({
+        isDraw: true,
+      });
+    }, 600);
+    return;
+  }
+
+  // Switch player
+  if (state.gameMode === '3p') {
+    if (state.currentPlayer === state.X) state.currentPlayer = state.O;
+    else if (state.currentPlayer === state.O)
+      state.currentPlayer = state.TRIANGLE;
+    else state.currentPlayer = state.X;
+  } else {
+    state.currentPlayer = state.currentPlayer === state.X ? state.O : state.X;
+  }
+  state.updateTurnDisplay();
+  state.updateMoveLog();
+
+  // AI move
+  if (state.isCurrentPlayerBot() && !state.gameOver) {
+    setTimeout(() => {
+      const aiMove = state.getAIMove();
+      if (aiMove !== -1) state.makeMove(aiMove);
+    }, 400);
+  }
+};
+
+state.resetGame = function resetGame() {
+  state.board = new Array(27).fill(state.EMPTY);
+  state.currentPlayer = state.X;
+  state.gameOver = false;
+  state.winLine = null;
+  state.moveHistory = [];
+  state.hoveredCell = -1;
+  state.lastGameResult = null;
+  state.closeGameOverModal();
+  const mobBtnResult = document.getElementById('mobBtnResult');
+  if (mobBtnResult) mobBtnResult.style.display = 'none';
+
+  state.clearWinLines3D();
+
+  state.buildCells();
+  state.updateCellPositions();
+  state.updateFlatView();
+  state.updateTurnDisplay();
+  state.updateStatusDisplay();
+  state.updateMoveLog();
+  state.updateLinesChecklist();
+
+  state.playSound('draw');
+
+  document.getElementById('historyLog').innerHTML = '';
+};
+
+// ═══════════════════════════════════════════════════════════════

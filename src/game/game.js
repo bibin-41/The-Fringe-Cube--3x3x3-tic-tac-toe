@@ -5,13 +5,21 @@ import { state } from '../state.js';
 
 state.makeMove = function makeMove(cellIndex, { fromNetwork = false } = {}) {
   if (state.board[cellIndex] !== state.EMPTY || state.gameOver) return;
+  const supportsRemotePlay =
+    (state.primaryMode === '2p' && state.mode2P === 'human') ||
+    (state.primaryMode === '3p' && state.botMode3P !== '2');
   if (
-    state.network &&
     !fromNetwork &&
-    (!state.remoteReadyToPlay ||
+    ((state.humanPlaySetup === 'remote' && supportsRemotePlay) || state.network)
+  ) {
+    if (
+      !state.network ||
+      !state.remoteReadyToPlay ||
       (state.currentPlayer !== state.localPlayerSymbol &&
-        !(state.remoteIsHost && state.isCurrentPlayerBot())))
-  ) return;
+        !(state.remoteIsHost && state.isCurrentPlayerBot()))
+    )
+      return;
+  }
 
   state.board[cellIndex] = state.currentPlayer;
   state.moveHistory.push({ player: state.currentPlayer, cell: cellIndex });

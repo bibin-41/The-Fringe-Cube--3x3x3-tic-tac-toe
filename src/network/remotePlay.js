@@ -3,15 +3,23 @@ import { state } from '../state.js';
 
 const GAME_ID =
   import.meta.env.VITE_POKI_GAME_ID || '45b0e470-c065-48ce-8df9-713c089064e8';
-const PLAYER_SYMBOLS = [state.X, state.O, state.TRIANGLE];
+
+function getHumanSymbols(config = getLocalConfiguration()) {
+  if (config.gameMode !== '3p') return [state.X, state.O];
+  if (config.botMode3P === '0') {
+    return [state.X, state.O, state.TRIANGLE];
+  }
+  if (config.botMode3P === '1') return [state.X, state.O];
+  return [state.X];
+}
 
 function getExpectedPlayerCount(config = getLocalConfiguration()) {
-  return config.gameMode === '3p' && config.botMode3P === '0' ? 3 : 2;
+  return getHumanSymbols(config).length;
 }
 
 function getLocalConfiguration() {
   return {
-    gameMode: state.gameMode === '3p' ? '3p' : '2p',
+    gameMode: state.primaryMode === '3p' ? '3p' : '2p',
     botMode3P: state.botMode3P,
     aiDifficulty: state.aiDifficulty,
     playerName: getPlayerName(),
@@ -79,6 +87,22 @@ function updateRoomDisplay() {
       item.append(name, status);
       list.appendChild(item);
     }
+    const botSymbols =
+      state.primaryMode === '3p' && state.botMode3P === '1'
+        ? [state.TRIANGLE]
+        : state.primaryMode === '3p' && state.botMode3P === '2'
+          ? [state.O, state.TRIANGLE]
+          : [];
+    for (const symbol of botSymbols) {
+      const item = document.createElement('li');
+      const name = document.createElement('span');
+      name.textContent = `AI (${symbolName(symbol)})`;
+      const status = document.createElement('span');
+      status.className = 'remote-player-status';
+      status.textContent = 'BOT';
+      item.append(name, status);
+      list.appendChild(item);
+    }
   }
   const createButton = document.getElementById('btnCreateRoom');
   const joinButton = document.getElementById('btnJoinRoom');
@@ -100,8 +124,15 @@ function updateConnectionStatus() {
   const connectedPlayers = state.remotePlayers.filter(
     (player) => player.connected,
   ).length;
+  const requiredSymbols = getHumanSymbols();
+  const connectedSymbols = new Set(
+    state.remotePlayers
+      .filter((player) => player.connected)
+      .map((player) => player.symbol),
+  );
   state.remoteReadyToPlay =
-    connectedPlayers >= state.remoteExpectedPlayers &&
+    state.remoteGameStateReady &&
+    requiredSymbols.every((symbol) => connectedSymbols.has(symbol)) &&
     state.localPlayerSymbol !== null;
 
   if (state.remoteReadyToPlay) {
@@ -119,7 +150,18 @@ state.updateRemoteConnectionStatus = updateConnectionStatus;
 
 function getNextSymbol() {
   const used = new Set(state.remotePlayers.map((player) => player.symbol));
-  return PLAYER_SYMBOLS.find((symbol) => !used.has(symbol)) ?? null;
+  return getHumanSymbols().find((symbol) => !used.has(symbol)) ?? null;
+}
+
+function getGameStateSnapshot() {
+  const result = state.gameOver ? state.checkWin(state.board) : null;
+  return {
+    moveHistory: state.moveHistory,
+    currentPlayer: state.currentPlayer,
+    gameOver: state.gameOver,
+    winLine: result?.line ?? null,
+    scores: state.scores,
+  };
 }
 
 function broadcastRoster() {
@@ -133,6 +175,7 @@ function broadcastRoster() {
       aiDifficulty: state.aiDifficulty,
       expectedPlayers: state.remoteExpectedPlayers,
     },
+    gameState: getGameStateSnapshot(),
   });
   updateConnectionStatus();
 }
@@ -143,16 +186,35 @@ function addOrUpdatePlayer(id, name, connected = true) {
     player.name = name || player.name;
     player.connected = connected;
   } else {
-    const symbol = getNextSymbol();
-    if (symbol === null) return false;
-    player = { id, name: name || `Player ${state.remotePlayers.length + 1}`, symbol, connected };
-    state.remotePlayers.push(player);
+    player = state.remotePlayers.find(
+      (entry) => !entry.connected && getHumanSymbols().includes(entry.symbol),
+    );
+    if (player) {
+      player.id = id;
+      player.name = name || player.name;
+      player.connected = connected;
+    } else {
+      const symbol = getNextSymbol();
+      if (symbol === null) return false;
+      const playerNumber = getHumanSymbols().indexOf(symbol) + 1;
+      player = {
+        id,
+        name: name || `Player ${playerNumber}`,
+        symbol,
+        connected,
+      };
+      state.remotePlayers.push(player);
+    }
   }
   return true;
 }
 
 function setRemoteConfiguration(config) {
-  if (!config || !['2p', '3p'].includes(config.gameMode)) {
+  if (
+    !config ||
+    !['2p', '3p'].includes(config.gameMode) ||
+    (config.gameMode === '3p' && !['0', '1', '2'].includes(config.botMode3P))
+  ) {
     setRoomStatus('This room has an invalid game configuration.', true);
     return false;
   }
@@ -162,10 +224,10 @@ function setRemoteConfiguration(config) {
   state.mode2P = 'human';
   state.botMode3P = config.gameMode === '3p' ? config.botMode3P : '0';
   state.aiDifficulty = config.aiDifficulty || 'medium';
-  state.remoteExpectedPlayers =
-    config.expectedPlayers || getExpectedPlayerCount(config);
+  state.remoteExpectedPlayers = getExpectedPlayerCount(config);
   state.humanPlaySetup = 'remote';
   state.remoteConfigApplied = true;
+  state.remoteGameStateReady = state.remoteIsHost;
 
   document.getElementById('btnMode2P')?.classList.toggle('active', config.gameMode === '2p');
   document.getElementById('btnMode3P')?.classList.toggle('active', config.gameMode === '3p');
@@ -199,10 +261,130 @@ function handleRoster(peer, data) {
     (player) => player.id === state.network.id,
   );
   state.localPlayerSymbol = localPlayer?.symbol ?? null;
+  if (!applyGameStateSnapshot(data.gameState)) {
+    state.remoteGameStateReady = false;
+    updateConnectionStatus();
+    setRoomStatus('Unable to synchronize the current match state.', true);
+    return;
+  }
   updateConnectionStatus();
   if (state.localPlayerSymbol === null) {
     setRoomStatus('Room is full. You were not assigned a player slot.', true);
   }
+}
+
+function applyGameStateSnapshot(snapshot) {
+  const scoreKeys = ['x', 'o', 'tri', 'draw'];
+  if (
+    !snapshot ||
+    !Array.isArray(snapshot.moveHistory) ||
+    snapshot.moveHistory.length > state.board.length ||
+    !snapshot.scores ||
+    !scoreKeys.every(
+      (key) =>
+        Number.isInteger(snapshot.scores[key]) && snapshot.scores[key] >= 0,
+    )
+  ) return false;
+
+  const board = new Array(state.board.length).fill(state.EMPTY);
+  let currentPlayer = state.X;
+  let result = null;
+  let isDraw = false;
+  const moveHistory = [];
+
+  for (let index = 0; index < snapshot.moveHistory.length; index++) {
+    const move = snapshot.moveHistory[index];
+    if (
+      !move ||
+      move.player !== currentPlayer ||
+      !Number.isInteger(move.cell) ||
+      move.cell < 0 ||
+      move.cell >= board.length ||
+      board[move.cell] !== state.EMPTY
+    ) return false;
+
+    board[move.cell] = move.player;
+    moveHistory.push({ player: move.player, cell: move.cell });
+    result = state.checkWin(board);
+    isDraw = !result && state.isBoardFull(board);
+    if (result || isDraw) {
+      if (index !== snapshot.moveHistory.length - 1) return false;
+    } else if (state.gameMode === '3p') {
+      currentPlayer =
+        currentPlayer === state.X
+          ? state.O
+          : currentPlayer === state.O
+            ? state.TRIANGLE
+            : state.X;
+    } else {
+      currentPlayer = currentPlayer === state.X ? state.O : state.X;
+    }
+  }
+
+  const gameOver = Boolean(result || isDraw);
+  if (
+    typeof snapshot.gameOver !== 'boolean' ||
+    snapshot.currentPlayer !== currentPlayer ||
+    snapshot.gameOver !== gameOver ||
+    !sameArray(snapshot.winLine, result?.line ?? null)
+  ) return false;
+
+  const sameMatch =
+    state.currentPlayer === currentPlayer &&
+    state.gameOver === gameOver &&
+    sameArray(state.board, board) &&
+    state.moveHistory.length === moveHistory.length &&
+    state.moveHistory.every(
+      (move, index) =>
+        move.player === moveHistory[index].player &&
+        move.cell === moveHistory[index].cell,
+    );
+
+  if (!sameMatch) {
+    state.resetGame({ broadcast: false });
+    state.board = board;
+    state.currentPlayer = currentPlayer;
+    state.gameOver = gameOver;
+    state.winLine = result?.line ?? null;
+    state.moveHistory = moveHistory;
+    state.lastGameResult = result
+      ? {
+          isDraw: false,
+          winner: result.winner,
+          winLine: result.line,
+          lineIndex: result.lineIndex,
+        }
+      : isDraw
+        ? { isDraw: true }
+        : null;
+
+    for (let cell = 0; cell < board.length; cell++) {
+      if (board[cell] !== state.EMPTY) state.placeGlyph3D(cell);
+    }
+    if (result) state.drawWinLine3D(result.line);
+    state.updateCellHighlights();
+    state.updateGhostPreview();
+    state.updateFlatView();
+    state.updateTurnDisplay();
+    state.updateStatusDisplay();
+    state.updateMoveLog();
+    state.updateLinesChecklist();
+  }
+
+  state.scores = { ...snapshot.scores };
+  state.updateScoreboard();
+  state.remoteGameStateReady = true;
+  return true;
+}
+
+function sameArray(first, second) {
+  if (first === null || second === null) return first === second;
+  return (
+    Array.isArray(first) &&
+    Array.isArray(second) &&
+    first.length === second.length &&
+    first.every((value, index) => value === second[index])
+  );
 }
 
 function handleMessage(peer, message) {
@@ -261,6 +443,7 @@ function startRemoteNetwork(action, roomCode = '') {
   state.remoteIsHost = false;
   state.localPlayerSymbol = null;
   state.remoteReadyToPlay = false;
+  state.remoteGameStateReady = false;
   state.remoteConfigApplied = false;
   state.remoteConnecting = true;
   setRoomStatus('Connecting to Poki Netlib…');
@@ -359,6 +542,13 @@ function startRemoteNetwork(action, roomCode = '') {
 
   network.on('disconnected', (peer) => {
     if (session !== state.networkSession) return;
+    if (!state.remoteIsHost && peer.id === state.remoteHostId) {
+      state.closeRemotePlay();
+      state.resetGame({ broadcast: false });
+      setRoomStatus('The host disconnected. The room is no longer available.');
+      updateRoomDisplay();
+      return;
+    }
     const player = state.remotePlayers.find((entry) => entry.id === peer.id);
     if (player) player.connected = false;
     if (state.remoteIsHost) broadcastRoster();
@@ -420,17 +610,23 @@ state.broadcastRemoteMessage = function broadcastRemoteMessage(message) {
 };
 
 state.createRemoteRoom = function createRemoteRoom() {
+  if (
+    state.network &&
+    (state.remoteConnecting ||
+      (state.remoteIsHost && state.remoteRoomCode))
+  ) return;
   startRemoteNetwork('create');
 };
 
 state.joinRemoteRoom = function joinRemoteRoom() {
   const input = document.getElementById('joinRoomCode');
-  const code = input?.value.trim();
+  const code = input?.value.trim().toLowerCase();
   if (!code) {
     setRoomStatus('Enter a room code to join.', true);
     input?.focus();
     return;
   }
+  input.value = code;
   startRemoteNetwork('join', code);
 };
 
@@ -462,6 +658,7 @@ state.closeRemotePlay = function closeRemotePlay() {
   state.localPlayerSymbol = null;
   state.remoteExpectedPlayers = 0;
   state.remoteReadyToPlay = false;
+  state.remoteGameStateReady = false;
   state.remoteConfigApplied = false;
   state.remoteConnecting = false;
   const code = document.getElementById('joinRoomCode');

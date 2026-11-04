@@ -26,6 +26,7 @@ export const state = {
   localPlayerSymbol: null,
   remoteExpectedPlayers: 0,
   remoteReadyToPlay: false,
+  remoteGameStateReady: false,
   remoteConfigApplied: false,
   remoteConnecting: false,
   gameMode: 'ai',

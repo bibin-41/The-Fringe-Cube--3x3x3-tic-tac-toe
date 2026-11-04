@@ -3,6 +3,19 @@ import { state } from '../state.js';
 // Controls
 // ═══════════════════════════════════════════════════════════════
 
+function restartSelectedRemoteRoom() {
+  const humanModeSelected =
+    (state.primaryMode === '2p' && state.mode2P === 'human') ||
+    (state.primaryMode === '3p' && state.botMode3P !== '2');
+  if (
+    humanModeSelected &&
+    state.humanPlaySetup === 'remote' &&
+    state.remoteRoomAction === 'create'
+  ) {
+    state.createRemoteRoom();
+  }
+}
+
 state.setViewMode = function setViewMode(mode) {
   state.viewMode = mode;
   document
@@ -73,6 +86,7 @@ state.setPrimaryMode = function setPrimaryMode(mode) {
   state.updateAISettingsVisibility();
   state.updateHumanPlaySetupVisibility();
   state.resetGame();
+  restartSelectedRemoteRoom();
 };
 
 state.set2PMode = function set2PMode(type) {
@@ -86,6 +100,7 @@ state.set2PMode = function set2PMode(type) {
   state.updateAISettingsVisibility();
   state.updateHumanPlaySetupVisibility();
   state.resetGame();
+  restartSelectedRemoteRoom();
 };
 
 state.set3PMode = function set3PMode(val) {
@@ -101,6 +116,7 @@ state.set3PMode = function set3PMode(val) {
   state.updateAISettingsVisibility();
   state.updateHumanPlaySetupVisibility();
   state.resetGame();
+  restartSelectedRemoteRoom();
 };
 
 state.updateHumanPlaySetupVisibility =
@@ -147,7 +163,7 @@ state.setHumanPlaySetup = function setHumanPlaySetup(setup) {
 };
 
 state.setRemoteRoomAction = function setRemoteRoomAction(action) {
-  if (state.network) {
+  if (state.network && state.remoteRoomAction !== action) {
     state.closeRemotePlay();
     state.resetGame({ broadcast: false });
   }
